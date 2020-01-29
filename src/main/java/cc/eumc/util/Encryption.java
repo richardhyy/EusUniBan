@@ -1,7 +1,5 @@
 package cc.eumc.util;
 
-import cc.eumc.UniBanPlugin;
-import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import org.apache.commons.lang.StringUtils;
 

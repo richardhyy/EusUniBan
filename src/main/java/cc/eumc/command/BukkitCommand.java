@@ -1,13 +1,12 @@
 package cc.eumc.command;
 
-import cc.eumc.UniBanPlugin;
+import cc.eumc.UniBanBukkitPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,12 +14,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class CommandManager implements CommandExecutor, TabExecutor {
-    UniBanPlugin plugin;
+public class BukkitCommand implements CommandExecutor, TabExecutor {
+    UniBanBukkitPlugin plugin;
     private String[] commands = {"help", "check", "whitelist", "reload"};
     private String[] whitelistSubcommands = {"add", "remove"};
 
-    public CommandManager (UniBanPlugin instance) {
+    public BukkitCommand(UniBanBukkitPlugin instance) {
         this.plugin = instance;
     }
 
@@ -32,6 +31,7 @@ public class CommandManager implements CommandExecutor, TabExecutor {
             }
             else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 plugin.reloadConfig();
+                plugin.reloadController();
                 plugin.registerTask();
                 sender.sendMessage("[UniBan] Reloaded.");
             }
@@ -39,7 +39,7 @@ public class CommandManager implements CommandExecutor, TabExecutor {
                 if (args[0].equalsIgnoreCase("check")) {
                     Boolean banned;
                     try {
-                        banned = plugin.isBannedOnline(UUID.fromString(args[1]));
+                        banned = plugin.getController().isBannedOnline(UUID.fromString(args[1]));
                     } catch (IllegalArgumentException e) {
                         Player player = Bukkit.getPlayer(args[1]);
                         if (player == null) {
@@ -47,7 +47,7 @@ public class CommandManager implements CommandExecutor, TabExecutor {
                             return true;
                         }
                         else
-                            banned = plugin.isBannedOnline(player);
+                            banned = plugin.getController().isBannedOnline(player);
                     }
                     sender.sendMessage("[UniBan] Player " + args[0] + " state: " + (banned?"§cbanned":"§anormal"));
                 }
@@ -59,7 +59,7 @@ public class CommandManager implements CommandExecutor, TabExecutor {
                 if (args[0].equalsIgnoreCase("whitelist")) {
                     if (args[1].equalsIgnoreCase("add")) {
                         try {
-                            plugin.addWhitelist(UUID.fromString(args[2]));
+                            plugin.getController().addWhitelist(UUID.fromString(args[2]));
                         } catch (IllegalArgumentException e) {
                             Player player = Bukkit.getPlayer(args[2]);
                             if (player == null) {
@@ -67,13 +67,13 @@ public class CommandManager implements CommandExecutor, TabExecutor {
                                 return true;
                             }
                             else
-                                plugin.addWhitelist(player.getUniqueId());
+                                plugin.getController().addWhitelist(player.getUniqueId());
                         }
                         sender.sendMessage("Player " + args[2] + " has been added to whitelist");
                     }
                     else if (args[1].equalsIgnoreCase("remove")) {
                         try {
-                            plugin.removeWhitelist(UUID.fromString(args[2]));
+                            plugin.getController().removeWhitelist(UUID.fromString(args[2]));
                         } catch (IllegalArgumentException e) {
                             Player player = Bukkit.getPlayer(args[2]);
                             if (player == null) {
@@ -81,7 +81,7 @@ public class CommandManager implements CommandExecutor, TabExecutor {
                                 return true;
                             }
                             else
-                                plugin.removeWhitelist(player.getUniqueId());
+                                plugin.getController().removeWhitelist(player.getUniqueId());
                         }
                         sender.sendMessage("Player " + args[2] + " has been removed from whitelist");
                     }

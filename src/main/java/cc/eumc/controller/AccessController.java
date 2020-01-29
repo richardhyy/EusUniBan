@@ -1,4 +1,6 @@
-package cc.eumc;
+package cc.eumc.controller;
+
+import cc.eumc.config.PluginConfig;
 
 import java.util.HashMap;
 import java.util.Map;

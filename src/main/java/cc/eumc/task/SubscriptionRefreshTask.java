@@ -1,7 +1,7 @@
 package cc.eumc.task;
 
-import cc.eumc.PluginConfig;
-import cc.eumc.UniBanPlugin;
+import cc.eumc.config.PluginConfig;
+import cc.eumc.controller.UniBanController;
 import cc.eumc.util.Encryption;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -11,16 +11,15 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class SubscriptionRefreshTask implements Runnable {
-    final UniBanPlugin plugin;
+    final UniBanController controller;
     boolean running = false;
-    public SubscriptionRefreshTask(UniBanPlugin instance) {
-        this.plugin = instance;
+    public SubscriptionRefreshTask(UniBanController instance) {
+        this.controller = instance;
     }
 
     @Override
@@ -36,14 +35,14 @@ public class SubscriptionRefreshTask implements Runnable {
                 String result = getHTML("http://" + address + "/get");
                 result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(address));
                 if (result == null) {
-                    plugin.getLogger().warning("Failed decrypting ban-list from: " + address + ". Is the password correct?");
+                    controller.sendWarning("Failed decrypting ban-list from: " + address + ". Is the password correct?");
                     continue;
                 }
                 else {
                     Type playerListType = new TypeToken<ArrayList<String>>(){}.getType();
                     List<String> banList = new Gson().fromJson(result, playerListType);
                     if (banList == null) {
-                        plugin.getLogger().warning(address + " responded with invalid data (length " + result.length() + ")");
+                        controller.sendWarning(address + " responded with invalid data (length " + result.length() + ")");
                         //plugin.getLogger().warning(result);
                         continue;
                     }
@@ -57,23 +56,23 @@ public class SubscriptionRefreshTask implements Runnable {
                             UUID uuid = UUID.fromString(uuidStr);
                             String validationUUID = uuid.toString();
                             if (validationUUID.equals(uuidStr)) {
-                                plugin.addOnlineBanned(uuid, host);
+                                controller.addOnlineBanned(uuid, host);
                                 count ++;
                             }
                         } catch(IllegalArgumentException e) {
                             continue;
                         }
                     }
-                    plugin.purgeOnlineBannedOfHost(host, banList);
+                    controller.purgeOnlineBannedOfHost(host, banList);
                 }
             }
             catch (Exception e) {
                 //e.printStackTrace();
-                plugin.getLogger().warning("Failed pulling ban-list from: " + address);
+                controller.sendWarning("Failed pulling ban-list from: " + address);
             }
         }
-        plugin.saveBanList();
-        plugin.getLogger().info("Updated " + count + " banned players from other servers.");
+        controller.saveBanList();
+        controller.sendInfo("Updated " + count + " banned players from other servers.");
 
         running = false;
     }

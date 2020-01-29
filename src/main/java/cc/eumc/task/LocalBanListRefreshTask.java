@@ -1,6 +1,6 @@
 package cc.eumc.task;
 
-import cc.eumc.UniBanPlugin;
+import cc.eumc.controller.UniBanController;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -9,10 +9,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public class LocalBanListRefreshTask implements Runnable {
-    final UniBanPlugin plugin;
+    final UniBanController controller;
     boolean running = false;
-    public LocalBanListRefreshTask(UniBanPlugin instance) {
-        this.plugin = instance;
+    public LocalBanListRefreshTask(UniBanController instance) {
+        this.controller = instance;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class LocalBanListRefreshTask implements Runnable {
                 uuidSet.add(offlinePlayer.getUniqueId());
             //}
         }
-        plugin.updateLocalBanListCache(uuidSet);
+        controller.updateLocalBanListCache(uuidSet);
         running = false;
     }
 }

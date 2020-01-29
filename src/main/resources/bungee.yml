@@ -1,0 +1,4 @@
+name: UniBan
+main: cc.eumc.UniBanBungeePlugin
+version: ${project.version}
+author: EucalyptusLeaves

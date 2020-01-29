@@ -1,6 +1,6 @@
 name: UniBan
 version: ${project.version}
-main: cc.eumc.UniBanPlugin
+main: cc.eumc.UniBanBukkitPlugin
 api-version: 1.13
 authors: [EucalyptusLeaves]
 commands:
