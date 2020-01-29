@@ -1,0 +1,33 @@
+Settings:
+  Broadcast:
+    Host: '0.0.0.0'
+    Port: 60009
+    Threads: 2
+    Password: 'UniBan'
+    AccessControl:
+      Enabled: true
+      MinPeriodPerServer: 1.0
+      Blacklist:
+        Enabled: false
+        IPList:
+          - '*'
+      Whitelist:
+        Enabled: true
+        IPList:
+          - '127.0.0.1'
+  Tasks:
+    # Unit: minute
+    LocalBanListRefreshPeriod: 1.0
+    SubscriptionRefreshPeriod: 10.0
+
+Subscription:
+  0:
+    Host: 'server.eumc.cc'
+    Port: 60009
+    Password: 'UniBan'
+
+UUIDWhitelist:
+  - '4bac238b-806f-4bb7-be4f-00ec9923387f'
+
+Message:
+  BannedOnlineKickMessage: '&eSorry, you have been banned from another {number} server.'
