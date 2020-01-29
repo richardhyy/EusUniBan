@@ -20,12 +20,10 @@ A decentralized ban-list sharing plugin for Minecraft server.
 
 *config.yml -> Subscription*
 
-`Subscription:
-
+```
+Subscription:
   0: #ID of the server, must be unique
-  
     Host: 'example.com' #Host name or IP
-    
     Port: 60009 #Port of UniBan Broadcast
-    
-    Password: 'UniBan' #You may ask for the password from the server owner`
+    Password: 'UniBan' #You may ask for the password from the server owner
+    ```
