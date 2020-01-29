@@ -26,4 +26,4 @@ Subscription:
     Host: 'example.com' #Host name or IP
     Port: 60009 #Port of UniBan Broadcast
     Password: 'UniBan' #You may ask for the password from the server owner
-    ```
+```
