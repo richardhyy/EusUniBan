@@ -15,6 +15,10 @@ A decentralized ban-list sharing plugin for Minecraft server.
   * Server whitelist
   * Server blacklist
   * Request frequency controlling
+  
+## Extra Requirement
+
+* An open TCP port that is available to public
 
 ## Subscription
 
