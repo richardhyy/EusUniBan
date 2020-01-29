@@ -18,7 +18,7 @@ A decentralized ban-list sharing plugin for Minecraft server.
   
 ## Extra Requirement
 
-* An open TCP port that is available to public
+* An open TCP port that is accessible by public
 
 ## Subscription
 
