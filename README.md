@@ -42,7 +42,7 @@ Subscription:
 
 * Ban-sharing status display which can be accessed in browsers
 * Fully Bungeecord Supported
-  * Working /w third-party ban managing plugins
+  * Working with third-party ban managing plugins
 * Server Identifier
 
 
