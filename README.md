@@ -15,19 +15,42 @@ A decentralized ban-list sharing plugin for Minecraft server.
   * Server whitelist
   * Server blacklist
   * Request frequency controlling
-  
+
+
+
 ## Extra Requirement
 
 * An open TCP port that is accessible by public
+
+
 
 ## Subscription
 
 *config.yml -> Subscription*
 
-```
+```yaml
 Subscription:
   0: #ID of the server, must be unique
     Host: 'example.com' #Host name or IP
     Port: 60009 #Port of UniBan Broadcast
     Password: 'UniBan' #You may ask for the password from the server owner
 ```
+
+
+
+## Coming Soon
+
+* Bungeecord Support
+  * Working /w third-party ban managing plugins
+* Server Identifier
+
+
+
+## Change Log
+
+### 1.0 Snapshot2
+
+* Partly support for Bungeecord
+* Fixed:
+  * Host name duplication in ban-list cache
+  * Wrong host name displayed in ban-list cache
