@@ -52,5 +52,5 @@ Subscription:
 
 * Partly support for Bungeecord
 * Fixed:
-  * Host name duplication in ban-list cache
-  * Wrong host name displayed in ban-list cache
+  * Hostname duplication in ban-list cache
+  * Wrong hostname displayed in ban-list cache
