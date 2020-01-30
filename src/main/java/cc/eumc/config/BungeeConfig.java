@@ -1,46 +1,21 @@
-package cc.eumc.controller;
+package cc.eumc.config;
 
 import cc.eumc.UniBanBungeePlugin;
 import net.md_5.bungee.config.Configuration;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class UniBanBungeeController extends UniBanController {
-
-    public UniBanBungeeController() {
+public class BungeeConfig extends PluginConfig {
+    UniBanBungeePlugin plugin;
+    public BungeeConfig(UniBanBungeePlugin instance) {
         super();
-        /*
-        if (super.serverStarted) {
-            sendInfo("UniBan broadcast started on " + BungeeConfig.Host + ":" + BungeeConfig.Port + " (" + BungeeConfig.Threads + " Threads)");
-        }
-        else {
-            sendSevere("Failed starting broadcast server");
-        }*/
-
+        // TODO Support for bungeecord
+        EnableBroadcast = false;
+        this.plugin = instance;
     }
 
-    @Override
-    public File getDataFolder() {
-        return UniBanBungeePlugin.getInstance().getDataFolder();
-    }
-
-    @Override
-    public void sendInfo(String message) {
-        UniBanBungeePlugin.getInstance().getLogger().info(message);
-    }
-
-    @Override
-    public void sendWarning(String message) {
-        UniBanBungeePlugin.getInstance().getLogger().warning(message);
-    }
-
-    @Override
-    public void sendSevere(String message) {
-        UniBanBungeePlugin.getInstance().getLogger().severe(message);
-    }
 
     @Override
     public void saveConfig() {
@@ -90,5 +65,4 @@ public class UniBanBungeeController extends UniBanController {
     public void configSet(String path, Object object) {
         getConfig().set(path, object);
     }
-
 }

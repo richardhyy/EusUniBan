@@ -17,12 +17,12 @@ public class BukkitPlayerListener implements Listener {
         if (PluginConfig.UUIDWhitelist.contains(e.getPlayer().getUniqueId().toString())) {
             return;
         }
-        if (plugin.getController().isBannedOnline(e.getPlayer())) {
+        if (plugin.getController().isBannedOnline(e.getPlayer().getUniqueId())) {
             if (e.getPlayer().isOp()) {
                 plugin.getLogger().info("Ignored OP: " + e.getPlayer().getName());
                 return;
             }
-            e.disallow(PlayerLoginEvent.Result.KICK_BANNED, PluginConfig.BannedOnlineKickMessage.replace("{number}", plugin.getController().getBannedServerAmount(e.getPlayer()).toString()));
+            e.disallow(PlayerLoginEvent.Result.KICK_BANNED, PluginConfig.BannedOnlineKickMessage.replace("{number}", plugin.getController().getBannedServerAmount(e.getPlayer().getUniqueId()).toString()));
         }
     }
 }

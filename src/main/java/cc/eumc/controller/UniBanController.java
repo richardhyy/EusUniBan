@@ -6,29 +6,29 @@ import cc.eumc.handler.IDRequestHandler;
 import cc.eumc.util.Encryption;
 import com.google.gson.Gson;
 import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import com.sun.net.httpserver.HttpServer;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class UniBanController {
     HttpServer server;
-    boolean serverStarted = false;
+    boolean serverStarted;
 
-    final String banListFilename = "banlist.yml";
+    final String banListFilename = "banlist.json";
 
     String banJson = "";
 
     Map<UUID, List<String>> bannedPlayerOnline = new HashMap<>();
 
     public UniBanController () {
+        serverStarted = false;
         loadBanListFromDisk();
 
         if (PluginConfig.EnableBroadcast) {
@@ -68,6 +68,68 @@ public abstract class UniBanController {
             }
         }
 
+        JSONParser jsonParser = new JSONParser();
+
+        try {
+            FileReader reader = new FileReader(file);
+            Object obj = null;
+            obj = jsonParser.parse(reader);
+            JSONArray uuidhostArray = (JSONArray) obj;
+
+            //Map<String, List<String>> map = new HashMap<>();
+
+            AtomicInteger count = new AtomicInteger();
+
+            uuidhostArray.forEach( object -> {
+                JSONObject playerObject = (JSONObject) object;
+
+                String uuidStr = playerObject.get("uuid").toString();
+                UUID uuid = UUID.fromString(uuidStr);
+                String validationUUID = uuid.toString();
+                if (validationUUID.equals(uuidStr)) {
+                    JSONArray hostArray = (JSONArray) playerObject.get("server");
+                    List<String> hostList = new ArrayList<>();
+                    for (int i=0; i<hostArray.size(); i++) {
+                        addOnlineBanned(uuid, hostArray.get(i).toString());
+                    }
+                    count.getAndIncrement();
+                }
+                else {
+                    sendSevere("Invalid UUID: " + uuidStr);
+                }
+
+            });
+
+            /*
+            uuidListArray.forEach( uuidhostObject -> {
+                JSONObject object = (JSONObject) uuidListArray.
+
+                String uuidStr = .toString();
+                UUID uuid = UUID.fromString(uuidStr);
+                String validationUUID = uuid.toString();
+                if (validationUUID.equals(uuidStr)) {
+                    JSONObject hostObject = (JSONObject) (uuidhostObject);
+                    for (Object key : hostObject.keySet()) {
+                        String host = ((JSONObject)key).toString();
+                        addOnlineBanned(uuid, host);
+                        count.getAndIncrement();
+                    }
+                }
+                else {
+                    sendSevere("Invalid UUID: " + uuidStr);
+                }
+            });*/
+
+            sendInfo("Loaded " + count + " banned players from ban-list cache.");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        /*
         FileConfiguration banListConfig = YamlConfiguration.loadConfiguration(file);
         if (banListConfig.isConfigurationSection("UniBanList")) {
             for (String uuidStr : banListConfig.getConfigurationSection("UniBanList").getKeys(false)) {
@@ -86,7 +148,7 @@ public abstract class UniBanController {
                     continue;
                 }
             }
-        }
+        }*/
     }
 
     public void saveBanList() {
@@ -100,6 +162,27 @@ public abstract class UniBanController {
             }
         }
 
+        JSONArray banListArray = new JSONArray();
+        for (UUID uuid : bannedPlayerOnline.keySet()) {
+            JSONObject playerObject = new JSONObject();
+            JSONArray hostArray = new JSONArray();
+
+            playerObject.put("uuid", uuid.toString());
+            hostArray.addAll(bannedPlayerOnline.get(uuid));
+            playerObject.put("server", hostArray);
+
+            banListArray.add(playerObject);
+        }
+
+        try (FileWriter fw = new FileWriter(file)) {
+            fw.write(banListArray.toJSONString());
+            fw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendSevere("Failed saving ban-list to " + banListFilename);
+        }
+
+        /*
         FileConfiguration banListConfig = YamlConfiguration.loadConfiguration(file);
         for (UUID uuid : bannedPlayerOnline.keySet()) {
             List<String> hosts = bannedPlayerOnline.get(uuid);
@@ -109,12 +192,12 @@ public abstract class UniBanController {
             banListConfig.save(file);
         } catch (IOException e) {
             sendSevere("Failed saving " + banListFilename);
-        }
+        }*/
     }
 
     public void addWhitelist(UUID uuid) {
         PluginConfig.UUIDWhitelist.add(uuid.toString());
-        List<String> whitelist = getStringList("UUIDWhitelist");
+        List<String> whitelist = configGetStringList("UUIDWhitelist");
         whitelist.add(uuid.toString());
         configSet("UUIDWhitelist", whitelist);
         saveConfig();
@@ -122,7 +205,7 @@ public abstract class UniBanController {
 
     public void removeWhitelist(UUID uuid) {
         PluginConfig.UUIDWhitelist.remove(uuid.toString());
-        List<String> whitelist = getStringList("UUIDWhitelist");
+        List<String> whitelist = configGetStringList("UUIDWhitelist");
         whitelist.remove(uuid.toString());
         configSet("UUIDWhitelist", whitelist);
         saveConfig();
@@ -131,8 +214,10 @@ public abstract class UniBanController {
     public void addOnlineBanned(UUID uuid, String fromServer) {
         if (bannedPlayerOnline.containsKey(uuid)) {
             List<String> serverList = new ArrayList<>(bannedPlayerOnline.get(uuid));
-            serverList.add(fromServer);
-            bannedPlayerOnline.put(uuid, serverList);
+            if (!serverList.contains(fromServer)) { // Fix duplication
+                serverList.add(fromServer);
+                bannedPlayerOnline.put(uuid, serverList);
+            }
         }
         else {
             bannedPlayerOnline.put(uuid, Collections.singletonList(fromServer));
@@ -160,18 +245,9 @@ public abstract class UniBanController {
         }
     }
 
-    public Boolean isBannedOnline(@Nullable Player player) {
-        if (player == null) return false;
-        return isBannedOnline(player.getUniqueId());
-    }
-
     public Boolean isBannedOnline(UUID uuid) {
         // NOT_TODO Display bannedFrom.
         return bannedPlayerOnline.containsKey(uuid);
-    }
-
-    public Integer getBannedServerAmount(@NotNull Player player) {
-        return getBannedServerAmount(player.getUniqueId());
     }
 
     public Integer getBannedServerAmount(@NotNull UUID uuid) {
@@ -199,8 +275,14 @@ public abstract class UniBanController {
     public abstract void sendWarning(String message);
     public abstract void sendSevere(String message);
 
-    // TODO complete abstracting configuration methods
-    abstract boolean configGetBoolean(String path, Boolean def);
-    abstract List<String> getStringList(String path);
-    abstract void configSet(String path, Object object);
+    public abstract boolean configGetBoolean(String path, Boolean def);
+    public abstract String configGetString(String path, String def);
+    public abstract Double configGetDouble(String path, Double def);
+    public abstract int configGetInt(String path, int def);
+    public abstract List<String> configGetStringList(String path);
+    public abstract boolean configIsSection(String path);
+    public abstract Set<String> getConfigurationSectionKeys(String path);
+
+    public abstract void configSet(String path, Object object);
+
 }

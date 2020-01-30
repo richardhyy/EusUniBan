@@ -1,43 +1,17 @@
-package cc.eumc.controller;
+package cc.eumc.config;
 
 import cc.eumc.UniBanBukkitPlugin;
-import cc.eumc.config.BukkitConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-public class UniBanBukkitController extends UniBanController {
-    public UniBanBukkitController() {
+public class BukkitConfig extends PluginConfig {
+    UniBanBukkitPlugin plugin;
+
+    public BukkitConfig(UniBanBukkitPlugin instance) {
         super();
-        //this.plugin = instance;
-        if (super.serverStarted) {
-            sendInfo("UniBan broadcast started on " + BukkitConfig.Host + ":" + BukkitConfig.Port + " (" + BukkitConfig.Threads + " Threads)");
-        }
-        else {
-            sendSevere("Failed starting broadcast server");
-        }
-    }
-
-    @Override
-    public File getDataFolder() {
-        return UniBanBukkitPlugin.getInstance().getDataFolder();
-    }
-
-    @Override
-    public void sendInfo(String message) {
-        UniBanBukkitPlugin.getInstance().getLogger().info(message);
-    }
-
-    @Override
-    public void sendWarning(String message) {
-        UniBanBukkitPlugin.getInstance().getLogger().warning(message);
-    }
-
-    @Override
-    public void sendSevere(String message) {
-        UniBanBukkitPlugin.getInstance().getLogger().severe(message);
+        this.plugin = instance;
     }
 
     @Override
@@ -71,7 +45,7 @@ public class UniBanBukkitController extends UniBanController {
 
     @Override
     public List<String> configGetStringList(String path) {
-        return UniBanBukkitPlugin.getInstance().getConfig().getStringList(path);
+        return getConfig().getStringList(path);
     }
 
     @Override
@@ -86,6 +60,7 @@ public class UniBanBukkitController extends UniBanController {
 
     @Override
     public void configSet(String path, Object object) {
-        UniBanBukkitPlugin.getInstance().getConfig().set(path, object);
+        getConfig().set(path, object);
     }
+
 }

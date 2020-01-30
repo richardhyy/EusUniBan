@@ -49,7 +49,7 @@ public class SubscriptionRefreshTask implements Runnable {
                     if (banList.size() == 0) {
                         continue;
                     }
-                    String host = address.substring(0, address.lastIndexOf(":")-1);
+                    String host = address.substring(0, address.lastIndexOf(":")); // Fix wrong host address
                     for (String uuidStr : banList) {
                         try {
                             // Check if the provided UUID is valid

@@ -1,6 +1,5 @@
 package cc.eumc.config;
 
-import cc.eumc.controller.UniBanController;
 import cc.eumc.util.Encryption;
 
 import java.security.Key;
@@ -30,29 +29,29 @@ public abstract class PluginConfig {
 
     public static String BannedOnlineKickMessage;
 
-    public PluginConfig(UniBanController instance) {
-        EnableBroadcast = instance.getConfig().getBoolean("Settings.Broadcast.Enabled", true);
+    public PluginConfig() {
+        EnableBroadcast = configGetBoolean("Settings.Broadcast.Enabled", true);
         if (EnableBroadcast) {
-            LocalBanListRefreshPeriod = instance.getConfig().getDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1);
-            SubscriptionRefreshPeriod = instance.getConfig().getDouble("Settings.Tasks.SubscriptionRefreshPeriod", 10);
-            Host = instance.getConfig().getString("Settings.Broadcast.Host", "0.0.0.0");
-            Port = instance.getConfig().getInt("Settings.Broadcast.Port", 60009);
-            Threads = instance.getConfig().getInt("Settings.Broadcast.Threads", 2);
-            EncryptionKey = Encryption.getKeyFromString(instance.getConfig().getString("Settings.Broadcast.Password", ""));
+            LocalBanListRefreshPeriod = configGetDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1.0);
+            SubscriptionRefreshPeriod = configGetDouble("Settings.Tasks.SubscriptionRefreshPeriod", 10.0);
+            Host = configGetString("Settings.Broadcast.Host", "0.0.0.0");
+            Port = configGetInt("Settings.Broadcast.Port", 60009);
+            Threads = configGetInt("Settings.Broadcast.Threads", 2);
+            EncryptionKey = Encryption.getKeyFromString(configGetString("Settings.Broadcast.Password", ""));
         }
-        ServerID = instance.getConfig().getString("Settings.Broadcast.ServerID", "");
+        ServerID = configGetString("Settings.Broadcast.ServerID", "");
         if (ServerID.equals("")) {
             ServerID = UUID.randomUUID().toString();
-            instance.getConfig().set("Settings.Broadcast.ServerID", ServerID);
-            instance.saveConfig();
+            configSet("Settings.Broadcast.ServerID", ServerID);
+            saveConfig();
         }
 
-        if (instance.getConfig().isConfigurationSection("Subscription")) {
-            for (String key : instance.getConfig().getConfigurationSection("Subscription").getKeys(false)) {
-                String host = instance.getConfig().getString("Subscription."+key+".Host", "");
+        if (configIsSection("Subscription")) {
+            for (String key : getConfigurationSectionKeys("Subscription")) {
+                String host = configGetString("Subscription."+key+".Host", "");
                 if (host.equals("")) continue;
-                String port = String.valueOf(instance.getConfig().getInt("Subscription."+key+".Port", 60009));
-                String password = instance.getConfig().getString("Subscription."+key+".Password", "");
+                String port = String.valueOf(configGetInt("Subscription."+key+".Port", 60009));
+                String password = configGetString("Subscription."+key+".Password", "");
                 Key decryptionKey = null;
                 if (!password.equals(""))
                     decryptionKey = Encryption.getKeyFromString(password);
@@ -64,23 +63,35 @@ public abstract class PluginConfig {
             }
         }
 
-        EnabledAccessControl = instance.getConfig().getBoolean("Settings.Broadcast.AccessControl.Enabled", true);
+        EnabledAccessControl = configGetBoolean("Settings.Broadcast.AccessControl.Enabled", true);
         if (EnabledAccessControl) {
-            MinPeriodPerServer = (int) (60 * instance.getConfig().getDouble("Settings.Broadcast.AccessControl.MinPeriodPerServer", 1.0));
+            MinPeriodPerServer = (int) (60 * configGetDouble("Settings.Broadcast.AccessControl.MinPeriodPerServer", 1.0));
 
-            BlacklistEnabled = instance.getConfig().getBoolean("Settings.Broadcast.AccessControl.Blacklist.Enabled", false);
+            BlacklistEnabled = configGetBoolean("Settings.Broadcast.AccessControl.Blacklist.Enabled", false);
             if (BlacklistEnabled) {
-                Blacklist = new ArrayList<>(instance.getConfig().getStringList("Settings.Broadcast.AccessControl.Blacklist.IPList"));
+                Blacklist = new ArrayList<>(configGetStringList("Settings.Broadcast.AccessControl.Blacklist.IPList"));
             }
 
-            WhitelistEnabled = instance.getConfig().getBoolean("Settings.Broadcast.AccessControl.Whitelist.Enabled", false);
+            WhitelistEnabled = configGetBoolean("Settings.Broadcast.AccessControl.Whitelist.Enabled", false);
             if (WhitelistEnabled) {
-                Whitelist = new ArrayList<>(instance.getConfig().getStringList("Settings.Broadcast.AccessControl.Whitelist.IPList"));
+                Whitelist = new ArrayList<>(configGetStringList("Settings.Broadcast.AccessControl.Whitelist.IPList"));
             }
         }
 
-        UUIDWhitelist = instance.getConfig().getStringList("UUIDWhitelist");
+        UUIDWhitelist = configGetStringList("UUIDWhitelist");
 
-        BannedOnlineKickMessage = instance.getConfig().getString("Message.BannedOnlineKickMessage", "§eSorry, you have been banned from another server.").replace("&", "§");
+        BannedOnlineKickMessage = configGetString("Message.BannedOnlineKickMessage", "§eSorry, you have been banned from another server.").replace("&", "§");
    }
+
+    abstract boolean configGetBoolean(String path, Boolean def);
+    abstract String configGetString(String path, String def);
+    abstract Double configGetDouble(String path, Double def);
+    abstract int configGetInt(String path, int def);
+    abstract List<String> configGetStringList(String path);
+    abstract boolean configIsSection(String path);
+    abstract Set<String> getConfigurationSectionKeys(String path);
+
+    abstract void configSet(String path, Object object);
+    abstract void saveConfig();
+
 }

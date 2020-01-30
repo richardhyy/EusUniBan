@@ -4,7 +4,6 @@ import cc.eumc.command.BungeeCommand;
 import cc.eumc.config.PluginConfig;
 import cc.eumc.controller.UniBanBungeeController;
 import cc.eumc.listener.BungeePlayerListener;
-import cc.eumc.task.LocalBanListRefreshTask;
 import cc.eumc.task.SubscriptionRefreshTask;
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -17,6 +16,7 @@ import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 public class UniBanBungeePlugin extends Plugin {
+    static UniBanBungeePlugin instance;
     ScheduledTask Task_LocalBanListRefreshTask;
     ScheduledTask Task_SubscriptionRefreshTask;
     UniBanBungeeController controller;
@@ -24,6 +24,7 @@ public class UniBanBungeePlugin extends Plugin {
 
     @Override
     public void onEnable() {
+        instance = this;
         if (!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
@@ -34,7 +35,7 @@ public class UniBanBungeePlugin extends Plugin {
 
         reloadConfig();
 
-        controller = new UniBanBungeeController(this);
+        controller = new UniBanBungeeController();
 
         registerTask();
         registerCommand();
@@ -72,17 +73,15 @@ public class UniBanBungeePlugin extends Plugin {
     public void reloadConfig() {
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
-            new PluginConfig();
         } catch (IOException e) {
             getProxy().getLogger().severe("Unable to load configuration.");
         }
-
     }
 
     public void reloadController() {
         if (controller != null)
             controller.destruct();
-        controller = new UniBanBungeeController(this);
+        controller = new UniBanBungeeController();
     }
 
     void registerCommand() {
@@ -90,11 +89,7 @@ public class UniBanBungeePlugin extends Plugin {
     }
 
     public void registerTask() {
-        if (Task_LocalBanListRefreshTask != null)
-            Task_LocalBanListRefreshTask.cancel();
-        if (PluginConfig.EnableBroadcast)
-            Task_LocalBanListRefreshTask = getProxy().getScheduler().schedule(this, new LocalBanListRefreshTask(getController()), 1,
-                    (int) (60 * PluginConfig.LocalBanListRefreshPeriod), TimeUnit.SECONDS);
+        // TODO Third-party Bungeecord ban-list plugin support
 
         if (Task_SubscriptionRefreshTask != null)
             Task_SubscriptionRefreshTask.cancel();
@@ -113,7 +108,15 @@ public class UniBanBungeePlugin extends Plugin {
     }
 
     public void saveConfig() {
-        ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, new File(getDataFolder(), "config.yml"));
+        try {
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, new File(getDataFolder(), "config.yml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            getLogger().severe("Failed saving configuration file.");
+        }
     }
 
+    public static UniBanBungeePlugin getInstance() {
+        return instance;
+    }
 }

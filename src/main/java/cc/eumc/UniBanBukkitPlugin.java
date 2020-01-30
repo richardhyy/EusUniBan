@@ -1,6 +1,7 @@
 package cc.eumc;
 
 import cc.eumc.command.BukkitCommand;
+import cc.eumc.config.BukkitConfig;
 import cc.eumc.config.PluginConfig;
 import cc.eumc.controller.UniBanBukkitController;
 import cc.eumc.listener.BukkitPlayerListener;
@@ -13,12 +14,14 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 
 public final class UniBanBukkitPlugin extends JavaPlugin {
+    static UniBanBukkitPlugin instance;
     BukkitTask Task_LocalBanListRefreshTask;
     BukkitTask Task_SubscriptionRefreshTask;
     UniBanBukkitController controller;
 
     @Override
     public void onEnable() {
+        instance = this;
         File file = new File(getDataFolder(), "config.yml");
         if (!file.exists()) {
             saveDefaultConfig();
@@ -26,7 +29,7 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
 
         reloadConfig();
 
-        controller = new UniBanBukkitController(this);
+        controller = new UniBanBukkitController();
 
         registerTask();
         registerCommand();
@@ -50,14 +53,13 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
     public void reloadConfig() {
         super.reloadConfig();
 
-        new PluginConfig(this);
-
+        new BukkitConfig(this);
     }
 
     public void reloadController() {
         if (controller != null)
             controller.destruct();
-        controller = new UniBanBukkitController(this);
+        controller = new UniBanBukkitController();
     }
 
     void registerCommand() {
@@ -81,5 +83,9 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
 
     public UniBanBukkitController getController() {
         return controller;
+    }
+
+    public static UniBanBukkitPlugin getInstance() {
+        return instance;
     }
 }
