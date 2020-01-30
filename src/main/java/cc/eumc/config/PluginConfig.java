@@ -6,6 +6,9 @@ import java.security.Key;
 import java.util.*;
 
 public abstract class PluginConfig {
+    public final static int PluginConfigVersion = 2;
+
+    public static int ConfigVersion;
     public static boolean EnableBroadcast;
     public static double LocalBanListRefreshPeriod;
     public static double SubscriptionRefreshPeriod;
@@ -22,14 +25,16 @@ public abstract class PluginConfig {
     public static List<String> Blacklist;
     public static List<String> Whitelist;
 
-    public static Map<String, Key> Subscriptions = new HashMap<>();
+    public static Map<String, SubscriptionServerEntry> Subscriptions = new HashMap<>(); // Address - SubscriptionServerEntry
     public static Map<String, String> SubscriptionServerHostIDMap = new HashMap<>();
+    public static Map<String, SubscriptionGroupEntry> SubscriptionGroups = new HashMap<>(); // Groupname - SubscriptionGroupEntry
 
     public static List<String> UUIDWhitelist;
 
     public static String BannedOnlineKickMessage;
 
     public PluginConfig() {
+        ConfigVersion =  configGetInt("ConfigVersion", -1);
         EnableBroadcast = configGetBoolean("Settings.Broadcast.Enabled", true);
         if (EnableBroadcast) {
             LocalBanListRefreshPeriod = configGetDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1.0);
@@ -46,6 +51,25 @@ public abstract class PluginConfig {
             saveConfig();
         }
 
+        String defaultGroupName = "";
+        if (configIsSection("SubscriptionGroup")) {
+            for (String groupName : getConfigurationSectionKeys("SubscriptionGroup")) {
+                boolean isDefault = configGetBoolean("SubscriptionGroup."+groupName+".Default", false);
+                SubscriptionGroups.put(groupName,
+                        new SubscriptionGroupEntry(groupName,
+                                configGetInt("SubscriptionGroup."+groupName+".WarnThreshold", 1),
+                                configGetInt("SubscriptionGroup."+groupName+".BanThreshold", 1),
+                                isDefault));
+                if (isDefault) {
+                    defaultGroupName = groupName;
+                }
+            }
+        }
+        if (SubscriptionGroups.size() == 0 || defaultGroupName.equals("")) {
+            defaultGroupName = "Default";
+            SubscriptionGroups.put("Default", new SubscriptionGroupEntry("Default" ,1, 1, true));
+        }
+
         if (configIsSection("Subscription")) {
             for (String key : getConfigurationSectionKeys("Subscription")) {
                 String host = configGetString("Subscription."+key+".Host", "");
@@ -56,7 +80,10 @@ public abstract class PluginConfig {
                 if (!password.equals(""))
                     decryptionKey = Encryption.getKeyFromString(password);
 
-                Subscriptions.put(host+":"+port, decryptionKey);
+                Subscriptions.put(host+":"+port,
+                        new SubscriptionServerEntry(decryptionKey,
+                                SubscriptionGroups.getOrDefault(configGetString("Subscription."+key+".Group", "Default"),
+                                        SubscriptionGroups.get(defaultGroupName))));
 
                 // TODO run IdentifySubscriptionTask
                 //Bukkit.getScheduler().runTaskLater(instance, new IdentifySubscriptionTask(instance), 1);

@@ -1,7 +1,10 @@
 package cc.eumc;
 
 import cc.eumc.command.BungeeCommand;
+import cc.eumc.config.BungeeConfig;
 import cc.eumc.config.PluginConfig;
+import cc.eumc.config.SubscriptionGroupEntry;
+import cc.eumc.config.SubscriptionServerEntry;
 import cc.eumc.controller.UniBanBungeeController;
 import cc.eumc.listener.BungeePlayerListener;
 import cc.eumc.task.SubscriptionRefreshTask;
@@ -27,10 +30,6 @@ public class UniBanBungeePlugin extends Plugin {
         instance = this;
         if (!getDataFolder().exists()) {
             getDataFolder().mkdir();
-        }
-        File file = new File(getDataFolder(), "config.yml");
-        if (!file.exists()) {
-            saveDefaultConfig();
         }
 
         reloadConfig();
@@ -71,10 +70,31 @@ public class UniBanBungeePlugin extends Plugin {
     }
 
     public void reloadConfig() {
+        // Fix: Error when config was deleted before reloading
+        File file = new File(getDataFolder(), "config.yml");
+        if (!file.exists()) {
+            saveDefaultConfig();
+        }
+
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
         } catch (IOException e) {
             getProxy().getLogger().severe("Unable to load configuration.");
+        }
+
+        showSubscriptionInformation();
+    }
+
+    public void showSubscriptionInformation() {
+        getLogger().info("Groups [" + BungeeConfig.SubscriptionGroups.size() + "] -----");
+        for (String groupName : BungeeConfig.SubscriptionGroups.keySet()) {
+            SubscriptionGroupEntry groupEntry = BungeeConfig.SubscriptionGroups.get(groupName);
+            getLogger().info("* " + groupName + " | WarnThreshold: " + groupEntry.WarnThreshold + " | BanThreshold: " + groupEntry.BanThreshold + (groupEntry.IsDefault?" | Default":""));
+        }
+        getLogger().info("Subscriptions [" + BungeeConfig.Subscriptions.size() + "] -----");
+        for (String address : BungeeConfig.Subscriptions.keySet()) {
+            SubscriptionServerEntry serverEntry = BungeeConfig.Subscriptions.get(address);
+            getLogger().info("* " + address + " | Group: " + serverEntry.group.groupName + (serverEntry.key!=null?" | Encrypted":""));
         }
     }
 

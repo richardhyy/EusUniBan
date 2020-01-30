@@ -33,7 +33,7 @@ public class SubscriptionRefreshTask implements Runnable {
         for (String address : PluginConfig.Subscriptions.keySet()) {
             try {
                 String result = getHTML("http://" + address + "/get");
-                result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(address));
+                result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(address).key);
                 if (result == null) {
                     controller.sendWarning("Failed decrypting ban-list from: " + address + ". Is the password correct?");
                     continue;

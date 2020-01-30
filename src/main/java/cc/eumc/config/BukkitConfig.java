@@ -12,6 +12,9 @@ public class BukkitConfig extends PluginConfig {
     public BukkitConfig(UniBanBukkitPlugin instance) {
         super();
         this.plugin = instance;
+        if (BukkitConfig.ConfigVersion != BukkitConfig.PluginConfigVersion) {
+            instance.getLogger().warning("Your configuration version is " + BukkitConfig.ConfigVersion + " which may not be well supported by the plugin. It is suggested that you backup and delete it, then reload UniBan.");
+        }
     }
 
     @Override
