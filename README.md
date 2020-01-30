@@ -41,7 +41,7 @@ Subscription:
 ## Coming Soon
 
 * Support for temporary banning
-* The ability for operators to handle emergency situations
+* The ability for operators to handle emergency situations about broadcast server
 * Working with third-party ban managing plugins
 * Fully Bungeecord Supported
 * Server Identifier
