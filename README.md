@@ -40,10 +40,13 @@ Subscription:
 
 ## Coming Soon
 
-* Ban-sharing status display which can be accessed in browsers
+* Support for temporary banning
+* The ability for operators to handle emergency situations
+* Working with third-party ban managing plugins
 * Fully Bungeecord Supported
-  * Working with third-party ban managing plugins
 * Server Identifier
+* Reusing the port of Minecraft server
+* Ban-sharing status display which can be accessed in browsers
 
 
 
