@@ -7,6 +7,7 @@ import cc.eumc.controller.UniBanBukkitController;
 import cc.eumc.listener.BukkitPlayerListener;
 import cc.eumc.task.LocalBanListRefreshTask;
 import cc.eumc.task.SubscriptionRefreshTask;
+import cc.eumc.task.UpdateCheckTask;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -88,6 +89,7 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
         Task_SubscriptionRefreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new SubscriptionRefreshTask(getController()), 20,
                 20 * (int) (60 * PluginConfig.SubscriptionRefreshPeriod));
 
+        Bukkit.getScheduler().runTaskAsynchronously(this, new UpdateCheckTask(getDescription().getVersion(), 74747));
         // TODO run IdentifySubscriptionTask
     }
 

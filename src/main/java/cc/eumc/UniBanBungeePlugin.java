@@ -6,6 +6,7 @@ import cc.eumc.config.PluginConfig;
 import cc.eumc.controller.UniBanBungeeController;
 import cc.eumc.listener.BungeePlayerListener;
 import cc.eumc.task.SubscriptionRefreshTask;
+import cc.eumc.task.UpdateCheckTask;
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -107,6 +108,8 @@ public class UniBanBungeePlugin extends Plugin {
             Task_SubscriptionRefreshTask.cancel();
         Task_SubscriptionRefreshTask = getProxy().getScheduler().schedule(this, new SubscriptionRefreshTask(getController()), 20,
                 (int) (60 * PluginConfig.SubscriptionRefreshPeriod), TimeUnit.SECONDS);
+
+        getProxy().getScheduler().runAsync(this, new UpdateCheckTask(getDescription().getVersion(), 74747));
 
         // TODO run IdentifySubscriptionTask
     }
