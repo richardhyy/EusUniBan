@@ -40,7 +40,6 @@ Subscription:
 
 ## Coming Soon
 
-* Support for temporary banning
 * The ability for operators to handle emergency situations about broadcast server
 * Working with third-party ban managing plugins
 * Fully Bungeecord Supported
@@ -51,6 +50,17 @@ Subscription:
 
 
 ## Change Log
+
+### 1.0 Snapshot3
+
+* Add:
+  * Threshold settings for warning and preventing when a player banned online entering
+  * Update checker
+* Fix:
+  * Error when config was deleted before reloading
+  * SubscriptionRefreshPeriod will not be loaded when broadcast is disabled
+  * Tab complete still work even if a player does not have permission "uniban.admin"
+  * The player would not be removed even if he/she is unbanned from all subscribed servers
 
 ### 1.0 Snapshot2
 
