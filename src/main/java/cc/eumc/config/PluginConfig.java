@@ -25,20 +25,24 @@ public abstract class PluginConfig {
     public static List<String> Blacklist;
     public static List<String> Whitelist;
 
-    public static Map<String, SubscriptionServerEntry> Subscriptions = new HashMap<>(); // Address - SubscriptionServerEntry
+    public static Map<String, Key> Subscriptions = new HashMap<>(); // Address - Key
     public static Map<String, String> SubscriptionServerHostIDMap = new HashMap<>();
-    public static Map<String, SubscriptionGroupEntry> SubscriptionGroups = new HashMap<>(); // Groupname - SubscriptionGroupEntry
 
     public static List<String> UUIDWhitelist;
 
+    public static int WarnThreshold;
+    public static int BanThreshold;
+
+    public static String WarningMessage;
     public static String BannedOnlineKickMessage;
 
     public PluginConfig() {
         ConfigVersion =  configGetInt("ConfigVersion", -1);
         EnableBroadcast = configGetBoolean("Settings.Broadcast.Enabled", true);
+        // Fix: SubscriptionRefreshPeriod will not be loaded when broadcast is disabled
+        SubscriptionRefreshPeriod = configGetDouble("Settings.Tasks.SubscriptionRefreshPeriod", 10.0);
         if (EnableBroadcast) {
             LocalBanListRefreshPeriod = configGetDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1.0);
-            SubscriptionRefreshPeriod = configGetDouble("Settings.Tasks.SubscriptionRefreshPeriod", 10.0);
             Host = configGetString("Settings.Broadcast.Host", "0.0.0.0");
             Port = configGetInt("Settings.Broadcast.Port", 60009);
             Threads = configGetInt("Settings.Broadcast.Threads", 2);
@@ -51,25 +55,6 @@ public abstract class PluginConfig {
             saveConfig();
         }
 
-        String defaultGroupName = "";
-        if (configIsSection("SubscriptionGroup")) {
-            for (String groupName : getConfigurationSectionKeys("SubscriptionGroup")) {
-                boolean isDefault = configGetBoolean("SubscriptionGroup."+groupName+".Default", false);
-                SubscriptionGroups.put(groupName,
-                        new SubscriptionGroupEntry(groupName,
-                                configGetInt("SubscriptionGroup."+groupName+".WarnThreshold", 1),
-                                configGetInt("SubscriptionGroup."+groupName+".BanThreshold", 1),
-                                isDefault));
-                if (isDefault) {
-                    defaultGroupName = groupName;
-                }
-            }
-        }
-        if (SubscriptionGroups.size() == 0 || defaultGroupName.equals("")) {
-            defaultGroupName = "Default";
-            SubscriptionGroups.put("Default", new SubscriptionGroupEntry("Default" ,1, 1, true));
-        }
-
         if (configIsSection("Subscription")) {
             for (String key : getConfigurationSectionKeys("Subscription")) {
                 String host = configGetString("Subscription."+key+".Host", "");
@@ -80,10 +65,7 @@ public abstract class PluginConfig {
                 if (!password.equals(""))
                     decryptionKey = Encryption.getKeyFromString(password);
 
-                Subscriptions.put(host+":"+port,
-                        new SubscriptionServerEntry(decryptionKey,
-                                SubscriptionGroups.getOrDefault(configGetString("Subscription."+key+".Group", "Default"),
-                                        SubscriptionGroups.get(defaultGroupName))));
+                Subscriptions.put(host+":"+port, decryptionKey);
 
                 // TODO run IdentifySubscriptionTask
                 //Bukkit.getScheduler().runTaskLater(instance, new IdentifySubscriptionTask(instance), 1);
@@ -107,6 +89,10 @@ public abstract class PluginConfig {
 
         UUIDWhitelist = configGetStringList("UUIDWhitelist");
 
+        WarnThreshold = configGetInt("Settings.WarnThreshold", 1);
+        BanThreshold = configGetInt("Settings.BanThreshold", 1);
+
+        WarningMessage = configGetString("Message.WarningMessage", "&bUniban &3&l> &ePlayer {player}{uuid} has been banned from another {number} server(s).").replace("&", "§");
         BannedOnlineKickMessage = configGetString("Message.BannedOnlineKickMessage", "§eSorry, you have been banned from another server.").replace("&", "§");
    }
 

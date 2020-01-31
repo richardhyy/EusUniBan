@@ -227,8 +227,10 @@ public abstract class UniBanController {
     public void purgeOnlineBannedOfHost(String host, List<String> banList) {
         //List<String> banList = new ArrayList<String>(Arrays.asList(list));
         for (UUID uuid : bannedPlayerOnline.keySet()) {
-            if (!bannedPlayerOnline.get(uuid).contains(host) && !banList.contains(uuid.toString()) ) {
+            // Fix: the player would not be removed even if he/she is unbanned from all subscribed servers
+            if (bannedPlayerOnline.get(uuid).contains(host) && !banList.contains(uuid.toString()) ) {
                 removeOnlineBanned(uuid, host);
+                break;
             }
         }
     }
@@ -237,11 +239,14 @@ public abstract class UniBanController {
         if (bannedPlayerOnline.containsKey(uuid)) {
             List<String> serverList = new ArrayList<>(bannedPlayerOnline.get(uuid));
 
-            if (serverList.size() == 1 && serverList.get(0).equals(fromServer)) // The player was only banned from this server
+            if (serverList.size() == 1 && serverList.get(0).equals(fromServer)) { // The player was only banned from this server
                 bannedPlayerOnline.remove(uuid);
-
-            serverList.remove(fromServer);
-            bannedPlayerOnline.put(uuid, serverList);
+            }
+            // Fix: the player would not be removed even if he/she is unbanned from all subscribed servers
+            else {
+                serverList.remove(fromServer);
+                bannedPlayerOnline.put(uuid, serverList);
+            }
         }
     }
 
@@ -250,7 +255,7 @@ public abstract class UniBanController {
         return bannedPlayerOnline.containsKey(uuid);
     }
 
-    public Integer getBannedServerAmount(@NotNull UUID uuid) {
+    public int getBannedServerAmount(@NotNull UUID uuid) {
         return bannedPlayerOnline.get(uuid).size();
     }
 

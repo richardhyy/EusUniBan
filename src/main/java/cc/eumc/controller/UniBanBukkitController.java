@@ -15,7 +15,7 @@ public class UniBanBukkitController extends UniBanController {
         if (super.serverStarted) {
             sendInfo("UniBan broadcast started on " + BukkitConfig.Host + ":" + BukkitConfig.Port + " (" + BukkitConfig.Threads + " Threads)");
         }
-        else {
+        else if (BukkitConfig.EnableBroadcast) {
             sendSevere("Failed starting broadcast server");
         }
     }

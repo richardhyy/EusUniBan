@@ -32,7 +32,7 @@ public abstract class CommandController {
                     else
                         banned = isBannedOnline(player);
                 }
-                result.add("[UniBan] Player " + args[0] + " state: " + (banned?"§cbanned":"§anormal"));
+                result.add("[UniBan] Player " + args[0] + " state: " + (banned?"§cbanned by at least 1 server":"§anormal"));
             }
             else {
                 sendHelp(result);

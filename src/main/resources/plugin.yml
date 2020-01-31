@@ -5,3 +5,13 @@ api-version: 1.13
 authors: [EucalyptusLeaves]
 commands:
   uniban:
+permissions:
+  uniban.admin:
+    default: op
+    description: Permission for UniBan management commands
+  uniban.getnotified:
+    default: op
+    description: Permission for getting notified when a player who is banned by more than threshold settings logining
+  uniban.ignore:
+    default: op
+    description: Ignore online ban & warning threshold

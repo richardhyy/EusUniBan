@@ -44,6 +44,9 @@ public class BukkitCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        // Fix: tab complete still work even if a player does not have permission "uniban.admin"
+        if (!sender.hasPermission("uniban.admin")) return new ArrayList<>();
+
         if (args.length > 2)
             return new ArrayList<>();
         else if (args.length == 2)

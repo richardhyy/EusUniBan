@@ -1,6 +1,7 @@
 package cc.eumc.listener;
 
 import cc.eumc.UniBanBungeePlugin;
+import cc.eumc.config.BukkitConfig;
 import cc.eumc.config.PluginConfig;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -24,8 +25,17 @@ public class BungeePlayerListener implements Listener {
         if (PluginConfig.UUIDWhitelist.contains(uuid.toString())) {
             return;
         }
-        if (plugin.getController().isBannedOnline(uuid)) {
-            e.setCancelReason(TextComponent.fromLegacyText(PluginConfig.BannedOnlineKickMessage.replace("{number}", plugin.getController().getBannedServerAmount(uuid).toString())));
+
+        int count = plugin.getController().getBannedServerAmount(e.getConnection().getUniqueId());
+        if (BukkitConfig.WarnThreshold > 0 && count >= BukkitConfig.WarnThreshold) {
+            String warningMessage = BukkitConfig.WarningMessage
+                    .replace("{player}", e.getConnection().getName())
+                    .replace("{uuid}", e.getConnection().getUniqueId().toString())
+                    .replace("{number}", String.valueOf(count));
+            plugin.getLogger().info(warningMessage);
         }
+        if (BukkitConfig.BanThreshold > 0 && count >= BukkitConfig.BanThreshold)
+            e.setCancelReason(TextComponent.fromLegacyText(PluginConfig.BannedOnlineKickMessage.replace("{number}", String.valueOf(count))));
+
     }
 }

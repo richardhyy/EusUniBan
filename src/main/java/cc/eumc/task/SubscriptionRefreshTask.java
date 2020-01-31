@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class SubscriptionRefreshTask implements Runnable {
         for (String address : PluginConfig.Subscriptions.keySet()) {
             try {
                 String result = getHTML("http://" + address + "/get");
-                result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(address).key);
+                result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(address));
                 if (result == null) {
                     controller.sendWarning("Failed decrypting ban-list from: " + address + ". Is the password correct?");
                     continue;
@@ -65,6 +66,9 @@ public class SubscriptionRefreshTask implements Runnable {
                     }
                     controller.purgeOnlineBannedOfHost(host, banList);
                 }
+            }
+            catch (SocketException e) {
+                controller.sendWarning("Failed pulling ban-list from: " + address + ". Increasing refreshing interval may help addressing this problem.");
             }
             catch (Exception e) {
                 //e.printStackTrace();

@@ -1,5 +1,8 @@
 ConfigVersion: 2
 Settings:
+  # Set to -1 to disable
+  WarnThreshold: 1
+  BanThreshold: 1
   Broadcast:
     Enabled: true
     Host: '0.0.0.0'
@@ -27,17 +30,10 @@ Subscription:
     Host: 'server.eumc.cc'
     Port: 60009
     Password: 'UniBan'
-    Group: 'Default'
-
-SubscriptionGroup:
-  General:
-    # Set to -1 to disable
-    WarnThreshold: 1
-    BanThreshold: 1
-    Default: true
 
 UUIDWhitelist:
   - '4bac238b-806f-4bb7-be4f-00ec9923387f'
 
 Message:
-  BannedOnlineKickMessage: '&eSorry, you have been banned from another {number} server.'
+  WarningMessage: '&bUniban &3&l> &ePlayer {player}{uuid} has been banned from another {number} server(s).'
+  BannedOnlineKickMessage: '&eSorry, you have been banned from another {number} server(s).'
