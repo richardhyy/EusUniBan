@@ -10,6 +10,8 @@ A decentralized ban-list sharing plugin for Minecraft server.
 * Sharing your ban-list without a central server
 * Benefiting from other servers without changing your own local ban-list
 * Subscribing servers you trust
+* It works with third-party banning plugins: including AdvancedBan, BungeeBan and LiteBans
+* Customizable warning & banning threshold
 * Encrypting your shared ban-list with customizable password
 * Access control:
   * Server whitelist
