@@ -58,6 +58,8 @@ public abstract class PluginConfig {
             saveConfig();
         }
 
+        // Fix: Subscriptions will not be cleaned when reloading
+        Subscriptions = new HashMap<>();
         if (configIsSection("Subscription")) {
             for (String key : getConfigurationSectionKeys("Subscription")) {
                 String host = configGetString("Subscription."+key+".Host", "");

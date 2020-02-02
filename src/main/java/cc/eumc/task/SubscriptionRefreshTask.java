@@ -6,7 +6,9 @@ import cc.eumc.util.Encryption;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -32,8 +34,23 @@ public class SubscriptionRefreshTask implements Runnable {
 
         int count = 0;
         for (String address : PluginConfig.Subscriptions.keySet()) {
+            String host = address.substring(0, address.lastIndexOf(":")); // Fix wrong host address
+            String port = address.substring(address.lastIndexOf(":")+1, address.length());
+
             try {
-                String result = getHTML("http://" + address + "/get");
+                String result = "";
+
+                switch (port) {
+                    case "80":
+                        result = httpGet("http://" + host + "/get");
+                        break;
+                    case "443":
+                        result = httpsGet("https://" + host + "/get");
+                        break;
+                    default:
+                        result = httpGet(address + "/get");
+                }
+
                 result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(address));
                 if (result == null) {
                     controller.sendWarning("Failed decrypting ban-list from: " + address + ". Is the password correct?");
@@ -50,7 +67,6 @@ public class SubscriptionRefreshTask implements Runnable {
                     if (banList.size() == 0) {
                         continue;
                     }
-                    String host = address.substring(0, address.lastIndexOf(":")); // Fix wrong host address
                     for (String uuidStr : banList) {
                         try {
                             // Check if the provided UUID is valid
@@ -68,11 +84,11 @@ public class SubscriptionRefreshTask implements Runnable {
                 }
             }
             catch (SocketException e) {
-                controller.sendWarning("Failed pulling ban-list from: " + address + ". Increasing refreshing interval may help addressing this problem.");
+                controller.sendWarning("Failed pulling ban-list from: " + host+":"+port + ". Increasing refreshing interval may help addressing this problem.");
             }
             catch (Exception e) {
-                //e.printStackTrace();
-                controller.sendWarning("Failed pulling ban-list from: " + address);
+                e.printStackTrace();
+                controller.sendWarning("Failed pulling ban-list from: " + host+":"+port);
             }
         }
         controller.saveBanList();
@@ -81,7 +97,7 @@ public class SubscriptionRefreshTask implements Runnable {
         running = false;
     }
 
-    static String getHTML(String urlToRead) throws Exception {
+    static String httpGet(String urlToRead) throws Exception {
         StringBuilder result = new StringBuilder();
         URL url = new URL(urlToRead);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -95,5 +111,23 @@ public class SubscriptionRefreshTask implements Runnable {
         }
         rd.close();
         return result.toString();
+    }
+
+    static String httpsGet(String urlTORead) throws Exception {
+        URL myUrl = new URL(urlTORead);
+        HttpsURLConnection conn = (HttpsURLConnection)myUrl.openConnection();
+        InputStream is = conn.getInputStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        String inputLine;
+        String result = "";
+
+        while ((inputLine = br.readLine()) != null) {
+            result = result + "\n" + inputLine;
+        }
+
+        br.close();
+        return result;
     }
 }
