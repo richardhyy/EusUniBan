@@ -124,6 +124,11 @@ Message:
 
 
 ## Change Log
+### 1.0 Snapshot4
+
+* Add: Support for third-party banning plugins, including AdvancedBan, BungeeBan, LiteBans, for both Bukkit and Bungeecord.
+* Fix: NullPointerException when player login
+* Change: Default warning message
 
 ### 1.0 Snapshot3
 
