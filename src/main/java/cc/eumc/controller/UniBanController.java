@@ -256,7 +256,12 @@ public abstract class UniBanController {
     }
 
     public int getBannedServerAmount(@NotNull UUID uuid) {
-        return bannedPlayerOnline.get(uuid).size();
+        // Fix: Null pointer exception
+        List<String> fromServer = bannedPlayerOnline.get(uuid);
+        if (fromServer == null)
+            return 0;
+        else
+            return fromServer.size();
     }
 
     public void updateLocalBanListCache(Set<UUID> uuidSet) {
