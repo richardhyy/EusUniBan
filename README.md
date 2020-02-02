@@ -115,8 +115,6 @@ Message:
 ## Coming Soon
 
 * The ability for operators to handle emergency situations about broadcast server
-* Working with third-party ban managing plugins
-* Fully Bungeecord Supported
 * Server Identifier
 * Reusing the port of Minecraft server
 * Ban-sharing status display which can be accessed in browsers
