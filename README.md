@@ -70,7 +70,7 @@ Settings:
   # Prevent players without permission "uniban.ignore" entering the server if they are banned by more than the value below, set to -1 to disable
   BanThreshold: 2
   Broadcast:
-    Enabled: false
+    Enabled: true
     # 0.0.0.0 if you want other servers access your ban-list
     Host: 0.0.0.0
     Port: 60009
