@@ -95,7 +95,7 @@ public abstract class PluginConfig {
         WarnThreshold = configGetInt("Settings.WarnThreshold", 1);
         BanThreshold = configGetInt("Settings.BanThreshold", 1);
 
-        WarningMessage = configGetString("Message.WarningMessage", "&bUniban &3&l> &ePlayer {player}{uuid} has been banned from another {number} server(s).").replace("&", "§");
+        WarningMessage = configGetString("Message.WarningMessage", "&bUniban &3&l> &eWarning: Player {player}({uuid}) has been banned from another {number} server(s).").replace("&", "§");
         BannedOnlineKickMessage = configGetString("Message.BannedOnlineKickMessage", "§eSorry, you have been banned from another server.").replace("&", "§");
    }
 
