@@ -3,8 +3,10 @@ package cc.eumc;
 import cc.eumc.command.BungeeCommand;
 import cc.eumc.config.BungeeConfig;
 import cc.eumc.config.PluginConfig;
+import cc.eumc.config.ThirdPartySupportConfig;
 import cc.eumc.controller.UniBanBungeeController;
 import cc.eumc.listener.BungeePlayerListener;
+import cc.eumc.task.LocalBanListRefreshTask;
 import cc.eumc.task.SubscriptionRefreshTask;
 import cc.eumc.task.UpdateCheckTask;
 import com.google.common.io.ByteStreams;
@@ -81,14 +83,20 @@ public class UniBanBungeePlugin extends Plugin {
             getProxy().getLogger().severe("Unable to load configuration.");
         }
 
-        showSubscriptionInformation();
+        showPluginInformation();
     }
 
-    public void showSubscriptionInformation() {
+    public void showPluginInformation() {
         getLogger().info("Subscriptions [" + BungeeConfig.Subscriptions.size() + "] -----");
         for (String address : BungeeConfig.Subscriptions.keySet()) {
             getLogger().info("* " + address + (BungeeConfig.Subscriptions.get(address)!=null?" | Encrypted":""));
         }
+
+        getLogger().info("Third-party Banning Plugin Support -----");
+        getLogger().info("* AdvancedBan: " + (ThirdPartySupportConfig.AdvancedBan?"§lEnabled":"§oNot Found"));
+        //getLogger().info("* BungeeAdminTool: " + (ThirdPartySupportConfig.BungeeAdminTool?"§lEnabled":"§oNot Found"));
+        getLogger().info("* BungeeBan: " + (ThirdPartySupportConfig.BungeeBan?"§lEnabled":"§oNot Found"));
+        getLogger().info("* LiteBans: " + (ThirdPartySupportConfig.LiteBans?"§lEnabled":"§oNot Found"));
     }
 
     public void reloadController() {
@@ -102,7 +110,12 @@ public class UniBanBungeePlugin extends Plugin {
     }
 
     public void registerTask() {
-        // TODO Third-party Bungeecord ban-list plugin support
+        // T√ODO Third-party Bungeecord ban-list plugin support
+        if (Task_LocalBanListRefreshTask != null)
+            Task_LocalBanListRefreshTask.cancel();
+        if (PluginConfig.EnableBroadcast)
+            Task_LocalBanListRefreshTask = getProxy().getScheduler().schedule(this, new LocalBanListRefreshTask(getController(),true), 1,
+                    (int) (60 * PluginConfig.LocalBanListRefreshPeriod), TimeUnit.SECONDS);
 
         if (Task_SubscriptionRefreshTask != null)
             Task_SubscriptionRefreshTask.cancel();

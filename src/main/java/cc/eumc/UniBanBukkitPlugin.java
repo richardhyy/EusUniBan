@@ -3,6 +3,7 @@ package cc.eumc;
 import cc.eumc.command.BukkitCommand;
 import cc.eumc.config.BukkitConfig;
 import cc.eumc.config.PluginConfig;
+import cc.eumc.config.ThirdPartySupportConfig;
 import cc.eumc.controller.UniBanBukkitController;
 import cc.eumc.listener.BukkitPlayerListener;
 import cc.eumc.task.LocalBanListRefreshTask;
@@ -57,14 +58,19 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
 
         new BukkitConfig(this);
 
-        showSubscriptionInformation();
+        showPluginInformation();
     }
 
-    public void showSubscriptionInformation() {
+    public void showPluginInformation() {
         getLogger().info("Subscriptions [" + BukkitConfig.Subscriptions.size() + "] -----");
         for (String address : BukkitConfig.Subscriptions.keySet()) {
             getLogger().info("* " + address + (BukkitConfig.Subscriptions.get(address)!=null?" | Encrypted":""));
         }
+        getLogger().info("Third-party Banning Plugin Support -----");
+        getLogger().info("* AdvancedBan: " + (ThirdPartySupportConfig.AdvancedBan?"§lEnabled":"§oNot Found"));
+        //getLogger().info("* BungeeAdminTool: " + (ThirdPartySupportConfig.BungeeAdminTool?"§lEnabled":"§oNot Found"));
+        //getLogger().info("* BungeeBan: " + (ThirdPartySupportConfig.BungeeBan?"§lEnabled":"§oNot Found"));
+        getLogger().info("* LiteBans: " + (ThirdPartySupportConfig.LiteBans?"§lEnabled":"§oNot Found"));
     }
 
     public void reloadController() {
@@ -81,7 +87,7 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
         if (Task_LocalBanListRefreshTask != null)
             Task_LocalBanListRefreshTask.cancel();
         if (PluginConfig.EnableBroadcast)
-            Task_LocalBanListRefreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new LocalBanListRefreshTask(getController()), 1,
+            Task_LocalBanListRefreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new LocalBanListRefreshTask(getController(), false), 1,
                 20 * (int) (60 * PluginConfig.LocalBanListRefreshPeriod));
 
         if (Task_SubscriptionRefreshTask != null)

@@ -11,7 +11,14 @@ public class BungeeConfig extends PluginConfig {
     UniBanBungeePlugin plugin;
     public BungeeConfig(UniBanBungeePlugin instance) {
         super();
-        // TODO Support for bungeecord
+
+        new ThirdPartySupportConfig( instance.getProxy().getPluginManager().getPlugin("AdvancedBan")!=null,
+                instance.getProxy().getPluginManager().getPlugin("BungeeAdminTool")!=null,
+                instance.getProxy().getPluginManager().getPlugin("BungeeBan")!=null,
+                instance.getProxy().getPluginManager().getPlugin("LiteBans")!=null
+        );
+
+        // T√ODO Support for bungeecord
         EnableBroadcast = false;
         this.plugin = instance;
     }

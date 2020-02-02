@@ -2,3 +2,4 @@ name: UniBan
 main: cc.eumc.UniBanBungeePlugin
 version: ${project.version}
 author: EucalyptusLeaves
+softdepend: [LiteBans, AdvancedBan, BungeeAdminTool, BungeeBan]

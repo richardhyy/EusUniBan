@@ -6,6 +6,9 @@ import java.security.Key;
 import java.util.*;
 
 public abstract class PluginConfig {
+    public static boolean LiteBans;
+    public static boolean AdvancedBan;
+
     public final static int PluginConfigVersion = 2;
 
     public static int ConfigVersion;

@@ -3,6 +3,7 @@ version: ${project.version}
 main: cc.eumc.UniBanBukkitPlugin
 api-version: 1.13
 authors: [EucalyptusLeaves]
+softdepend: [LiteBans, AdvancedBan]
 commands:
   uniban:
 permissions:

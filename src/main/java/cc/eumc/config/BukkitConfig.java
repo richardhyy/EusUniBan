@@ -11,6 +11,12 @@ public class BukkitConfig extends PluginConfig {
 
     public BukkitConfig(UniBanBukkitPlugin instance) {
         super();
+        new ThirdPartySupportConfig( instance.getServer().getPluginManager().isPluginEnabled("AdvancedBan"),
+                instance.getServer().getPluginManager().isPluginEnabled("BungeeAdminTool"),
+                instance.getServer().getPluginManager().isPluginEnabled("BungeeBan"),
+                instance.getServer().getPluginManager().isPluginEnabled("LiteBans")
+                );
+
         this.plugin = instance;
         if (BukkitConfig.ConfigVersion != BukkitConfig.PluginConfigVersion) {
             instance.getLogger().warning("Your configuration version is " + BukkitConfig.ConfigVersion + " which may not be well supported by the plugin. It is suggested that you backup and delete it, then reload UniBan.");
