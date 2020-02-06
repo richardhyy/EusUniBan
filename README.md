@@ -10,6 +10,8 @@ A decentralized ban-list sharing plugin for Minecraft server.
 * Sharing your ban-list without a central server
 * Benefiting from other servers without changing your own local ban-list
 * Subscribing servers you trust
+* It works with third-party banning plugins: including AdvancedBan, BungeeBan and LiteBans
+* Customizable warning & banning threshold
 * Encrypting your shared ban-list with customizable password
 * Access control:
   * Server whitelist
@@ -68,7 +70,7 @@ Settings:
   # Prevent players without permission "uniban.ignore" entering the server if they are banned by more than the value below, set to -1 to disable
   BanThreshold: 2
   Broadcast:
-    Enabled: false
+    Enabled: true
     # 0.0.0.0 if you want other servers access your ban-list
     Host: 0.0.0.0
     Port: 60009
@@ -115,8 +117,6 @@ Message:
 ## Coming Soon
 
 * The ability for operators to handle emergency situations about broadcast server
-* Working with third-party ban managing plugins
-* Fully Bungeecord Supported
 * Server Identifier
 * Reusing the port of Minecraft server
 * Ban-sharing status display which can be accessed in browsers
@@ -124,6 +124,11 @@ Message:
 
 
 ## Change Log
+### 1.0 Snapshot4
+
+* Add: Support for third-party banning plugins, including AdvancedBan, BungeeBan, LiteBans, for both Bukkit and Bungeecord.
+* Fix: NullPointerException when player login
+* Change: Default warning message
 
 ### 1.0 Snapshot3
 
