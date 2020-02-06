@@ -28,11 +28,14 @@ A decentralized ban-list sharing plugin for Minecraft server.
 
 ## Commands
 
-| Command                                          |
-| ------------------------------------------------ |
-| /uniban check <Player/UUID>                      |
-| /uniban whitelist <"add"/"remove"> <Player/UUID> |
-| /uniban reload                                   |
+| Command                                                      |
+| ------------------------------------------------------------ |
+| /uniban check <**Player/UUID**>                              |
+| /uniban whitelist <"**add**"/"**remove**"> <**Player/UUID**> |
+| /uniban subscribe \<**Subscription Key**\>                   |
+| /uniban share \<**Your Server Hostname**, eg. example.com\>  |
+| /uniban exempt \<**Server Address**\>                        |
+| /uniban reload                                               |
 
 
 
@@ -124,7 +127,9 @@ Message:
 
 
 ## Change Log
+
 ### 1.0
+
 * Add: A quick way to add/share subscriptions
 * Fix:
   * Configuration will not be reloaded on Bungeecord
