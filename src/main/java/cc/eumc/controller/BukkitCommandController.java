@@ -1,13 +1,15 @@
 package cc.eumc.controller;
 
 import cc.eumc.UniBanBukkitPlugin;
+import cc.eumc.config.BukkitConfig;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class BukkitCommandController extends CommandController {
     UniBanBukkitPlugin plugin;
-    public BukkitCommandController(UniBanBukkitPlugin instance) {
+    public BukkitCommandController(UniBanBukkitPlugin instance, BukkitConfig bukkitConfig) {
+        super(bukkitConfig);
         this.plugin = instance;
     }
 

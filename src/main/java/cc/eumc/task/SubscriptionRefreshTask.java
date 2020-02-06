@@ -1,9 +1,11 @@
 package cc.eumc.task;
 
 import cc.eumc.config.PluginConfig;
+import cc.eumc.config.ServerEntry;
 import cc.eumc.controller.UniBanController;
 import cc.eumc.util.Encryption;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -33,54 +35,61 @@ public class SubscriptionRefreshTask implements Runnable {
         running = true;
 
         int count = 0;
-        for (String address : PluginConfig.Subscriptions.keySet()) {
-            String host = address.substring(0, address.lastIndexOf(":")); // Fix wrong host address
-            String port = address.substring(address.lastIndexOf(":")+1, address.length());
+        for (ServerEntry serverEntry : PluginConfig.Subscriptions.keySet()) {
+            String host = serverEntry.host;
+            int port = serverEntry.port;
 
             try {
                 String result = "";
 
                 switch (port) {
-                    case "80":
+                    case 80:
                         result = httpGet("http://" + host + "/get");
                         break;
-                    case "443":
+                    case 443:
                         result = httpsGet("https://" + host + "/get");
                         break;
                     default:
-                        result = httpGet(address + "/get");
+                        result = httpGet("http://" + serverEntry.getAddress() + "/get");
                 }
 
-                result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(address));
+                result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(serverEntry));
                 if (result == null) {
-                    controller.sendWarning("Failed decrypting ban-list from: " + address + ". Is the password correct?");
+                    controller.sendWarning("Failed decrypting ban-list from: " + serverEntry.getAddress() + ". Is our password correct?");
                     continue;
                 }
                 else {
                     Type playerListType = new TypeToken<ArrayList<String>>(){}.getType();
-                    List<String> banList = new Gson().fromJson(result, playerListType);
-                    if (banList == null) {
-                        controller.sendWarning(address + " responded with invalid data (length " + result.length() + ")");
-                        //plugin.getLogger().warning(result);
-                        continue;
-                    }
-                    if (banList.size() == 0) {
-                        continue;
-                    }
-                    for (String uuidStr : banList) {
-                        try {
-                            // Check if the provided UUID is valid
-                            UUID uuid = UUID.fromString(uuidStr);
-                            String validationUUID = uuid.toString();
-                            if (validationUUID.equals(uuidStr)) {
-                                controller.addOnlineBanned(uuid, host);
-                                count ++;
-                            }
-                        } catch(IllegalArgumentException e) {
+                    try {
+                        List<String> banList = new Gson().fromJson(result, playerListType);
+                        if (banList == null) {
+                            controller.sendWarning(serverEntry.getAddress() + " responded with invalid data (length " + result.length() + ")");
+                            //plugin.getLogger().warning(result);
                             continue;
                         }
+                        if (banList.size() == 0) {
+                            continue;
+                        }
+                        for (String uuidStr : banList) {
+                            try {
+                                // Check if the provided UUID is valid
+                                UUID uuid = UUID.fromString(uuidStr);
+                                String validationUUID = uuid.toString();
+                                if (validationUUID.equals(uuidStr)) {
+                                    controller.addOnlineBanned(uuid, serverEntry.getAddress());
+                                    count++;
+                                }
+                            } catch (IllegalArgumentException e) {
+                                continue;
+                            }
+                        }
+                        controller.purgeOnlineBannedOfHost(serverEntry.getAddress(), banList);
                     }
-                    controller.purgeOnlineBannedOfHost(host, banList);
+                    // Fix: Misleading message when failed resolving ban-list caused by wrong password
+                    catch (JsonSyntaxException e) {
+                        controller.sendWarning("Failed resolving ban-list from: " + serverEntry.getAddress() + ". Is our password correct?");
+                        continue;
+                    }
                 }
             }
             catch (SocketException e) {
@@ -130,4 +139,5 @@ public class SubscriptionRefreshTask implements Runnable {
         br.close();
         return result;
     }
+
 }

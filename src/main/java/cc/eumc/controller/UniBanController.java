@@ -11,7 +11,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -121,9 +124,6 @@ public abstract class UniBanController {
             });*/
 
             sendInfo("Loaded " + count + " banned players from ban-list cache.");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return;
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -224,12 +224,12 @@ public abstract class UniBanController {
         }
     }
 
-    public void purgeOnlineBannedOfHost(String host, List<String> banList) {
+    public void purgeOnlineBannedOfHost(String address, List<String> banList) {
         //List<String> banList = new ArrayList<String>(Arrays.asList(list));
         for (UUID uuid : bannedPlayerOnline.keySet()) {
             // Fix: the player would not be removed even if he/she is unbanned from all subscribed servers
-            if (bannedPlayerOnline.get(uuid).contains(host) && !banList.contains(uuid.toString()) ) {
-                removeOnlineBanned(uuid, host);
+            if (bannedPlayerOnline.get(uuid).contains(address) && !banList.contains(uuid.toString()) ) {
+                removeOnlineBanned(uuid, address);
                 break;
             }
         }

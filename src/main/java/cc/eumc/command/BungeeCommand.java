@@ -13,7 +13,7 @@ public class BungeeCommand extends Command {
     public BungeeCommand(UniBanBungeePlugin instance) {
         super("uniban", "uniban.admin");
         this.plugin = instance;
-        commandController = new BungeeCommandController(instance);
+        commandController = new BungeeCommandController(instance, plugin.getBungeeConfig());
     }
 
     @Override

@@ -3,6 +3,7 @@ package cc.eumc;
 import cc.eumc.command.BukkitCommand;
 import cc.eumc.config.BukkitConfig;
 import cc.eumc.config.PluginConfig;
+import cc.eumc.config.ServerEntry;
 import cc.eumc.config.ThirdPartySupportConfig;
 import cc.eumc.controller.UniBanBukkitController;
 import cc.eumc.listener.BukkitPlayerListener;
@@ -20,6 +21,7 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
     BukkitTask Task_LocalBanListRefreshTask;
     BukkitTask Task_SubscriptionRefreshTask;
     UniBanBukkitController controller;
+    BukkitConfig bukkitConfig;
 
     @Override
     public void onEnable() {
@@ -56,15 +58,15 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
 
         super.reloadConfig();
 
-        new BukkitConfig(this);
+        bukkitConfig = new BukkitConfig(this);
 
         showPluginInformation();
     }
 
     public void showPluginInformation() {
         getLogger().info("Subscriptions [" + BukkitConfig.Subscriptions.size() + "] -----");
-        for (String address : BukkitConfig.Subscriptions.keySet()) {
-            getLogger().info("* " + address + (BukkitConfig.Subscriptions.get(address)!=null?" | Encrypted":""));
+        for (ServerEntry serverEntry : BukkitConfig.Subscriptions.keySet()) {
+            getLogger().info("* " + serverEntry.getAddress() + (BukkitConfig.Subscriptions.get(serverEntry.getAddress())!=null?" | Encrypted":""));
         }
         getLogger().info("Third-party Banning Plugin Support -----");
         getLogger().info("* AdvancedBan: " + (ThirdPartySupportConfig.AdvancedBan?"§lEnabled":"§oNot Found"));
@@ -105,5 +107,9 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
 
     public static UniBanBukkitPlugin getInstance() {
         return instance;
+    }
+
+    public BukkitConfig getBukkitConfig() {
+        return bukkitConfig;
     }
 }

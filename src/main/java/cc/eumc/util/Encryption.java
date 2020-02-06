@@ -33,7 +33,7 @@ public class Encryption {
         return null;
     }
 
-    public static String decrypt(String text, @Nullable Key aesKey) {
+    public static @Nullable String decrypt(String text, @Nullable Key aesKey) {
         if (aesKey == null) {
             return text;
         }

@@ -1,13 +1,15 @@
 package cc.eumc.controller;
 
 import cc.eumc.UniBanBungeePlugin;
+import cc.eumc.config.BungeeConfig;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class BungeeCommandController extends CommandController {
     UniBanBungeePlugin plugin;
-    public BungeeCommandController(UniBanBungeePlugin instance) {
+    public BungeeCommandController(UniBanBungeePlugin instance, BungeeConfig bungeeConfig) {
+        super(bungeeConfig);
         this.plugin = instance;
     }
 

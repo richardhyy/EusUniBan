@@ -18,6 +18,7 @@ public abstract class PluginConfig {
     public static String Host;
     public static int Port;
     public static int Threads;
+    public static String Password;
     public static Key EncryptionKey;
     public static String ServerID;
 
@@ -28,8 +29,8 @@ public abstract class PluginConfig {
     public static List<String> Blacklist;
     public static List<String> Whitelist;
 
-    public static Map<String, Key> Subscriptions = new HashMap<>(); // Address - Key
-    public static Map<String, String> SubscriptionServerHostIDMap = new HashMap<>();
+    public static Map<ServerEntry, Key> Subscriptions = new HashMap<>(); // Address - Key
+    //public static Map<String, String> SubscriptionServerHostIDMap = new HashMap<>();
 
     public static List<String> UUIDWhitelist;
 
@@ -49,7 +50,8 @@ public abstract class PluginConfig {
             Host = configGetString("Settings.Broadcast.Host", "0.0.0.0");
             Port = configGetInt("Settings.Broadcast.Port", 60009);
             Threads = configGetInt("Settings.Broadcast.Threads", 2);
-            EncryptionKey = Encryption.getKeyFromString(configGetString("Settings.Broadcast.Password", ""));
+            Password = configGetString("Settings.Broadcast.Password", "");
+            EncryptionKey = Encryption.getKeyFromString(Password);
         }
         ServerID = configGetString("Settings.Broadcast.ServerID", "");
         if (ServerID.equals("")) {
@@ -64,13 +66,13 @@ public abstract class PluginConfig {
             for (String key : getConfigurationSectionKeys("Subscription")) {
                 String host = configGetString("Subscription."+key+".Host", "");
                 if (host.equals("")) continue;
-                String port = String.valueOf(configGetInt("Subscription."+key+".Port", 60009));
+                int port = configGetInt("Subscription."+key+".Port", 60009);
                 String password = configGetString("Subscription."+key+".Password", "");
                 Key decryptionKey = null;
                 if (!password.equals(""))
                     decryptionKey = Encryption.getKeyFromString(password);
 
-                Subscriptions.put(host+":"+port, decryptionKey);
+                Subscriptions.put(new ServerEntry(host, port), decryptionKey);
 
                 // TODO run IdentifySubscriptionTask
                 //Bukkit.getScheduler().runTaskLater(instance, new IdentifySubscriptionTask(instance), 1);
@@ -99,7 +101,59 @@ public abstract class PluginConfig {
 
         WarningMessage = configGetString("Message.WarningMessage", "&bUniban &3&l> &eWarning: Player {player}({uuid}) has been banned from another {number} server(s).").replace("&", "§");
         BannedOnlineKickMessage = configGetString("Message.BannedOnlineKickMessage", "§eSorry, you have been banned from another server.").replace("&", "§");
-   }
+    }
+
+
+    public void addSubscription(ServerEntry serverEntry, String password, boolean save) {
+        Subscriptions.put(serverEntry, Encryption.getKeyFromString(password));
+
+        if (save) {
+            String key = String.valueOf(System.currentTimeMillis());
+            configSet("Subscription." + key + ".Host", serverEntry.host);
+            configSet("Subscription." + key + ".Port", serverEntry.port);
+            configSet("Subscription." + key + ".Password", password);
+            saveConfig();
+        }
+    }
+
+    public boolean removeSubscription(String address, boolean save) {
+        ServerEntry serverEntry = new ServerEntry(address);
+        boolean isRemoved = false;
+
+        for (ServerEntry listedServerEntry : Subscriptions.keySet()) {
+            if (listedServerEntry.host.equals(serverEntry.host)
+                    && (serverEntry.port == -1 || (serverEntry.port == listedServerEntry.port))) {
+                Subscriptions.remove(listedServerEntry);
+                isRemoved = true;
+                break;
+            }
+        }
+
+        if (save) {
+            boolean isSaved = false;
+            for (String key : getConfigurationSectionKeys("Subscription")) {
+                if (configGetString("Subscription."+key+".Host", "").equals(serverEntry.host)
+                && configGetInt("Subscription."+key+".Port", 0) == (serverEntry.port)) {
+                    configSet("Subscription." + key, null);
+                    saveConfig();
+                    isSaved = true;
+                    break;
+                }
+            }
+            return isSaved;
+        }
+
+        return isRemoved;
+    }
+
+    public String[] getSubscriptions() {
+        // TODO Performance optimization
+        List<String> addressList = new ArrayList<>();
+        for (ServerEntry serverEntry : PluginConfig.Subscriptions.keySet()) {
+            addressList.add(serverEntry.host + ":" + serverEntry.port);
+        }
+        return addressList.toArray(new String[0]);
+    }
 
     abstract boolean configGetBoolean(String path, Boolean def);
     abstract String configGetString(String path, String def);

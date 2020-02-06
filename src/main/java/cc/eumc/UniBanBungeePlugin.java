@@ -3,6 +3,7 @@ package cc.eumc;
 import cc.eumc.command.BungeeCommand;
 import cc.eumc.config.BungeeConfig;
 import cc.eumc.config.PluginConfig;
+import cc.eumc.config.ServerEntry;
 import cc.eumc.config.ThirdPartySupportConfig;
 import cc.eumc.controller.UniBanBungeeController;
 import cc.eumc.listener.BungeePlayerListener;
@@ -25,6 +26,7 @@ public class UniBanBungeePlugin extends Plugin {
     ScheduledTask Task_SubscriptionRefreshTask;
     UniBanBungeeController controller;
     Configuration configuration;
+    BungeeConfig bungeeConfig;
 
     @Override
     public void onEnable() {
@@ -83,13 +85,16 @@ public class UniBanBungeePlugin extends Plugin {
             getProxy().getLogger().severe("Unable to load configuration.");
         }
 
+        // Fix: Configuration will not be reloaded on Bungeecord
+        bungeeConfig = new BungeeConfig(this);
+
         showPluginInformation();
     }
 
     public void showPluginInformation() {
         getLogger().info("Subscriptions [" + BungeeConfig.Subscriptions.size() + "] -----");
-        for (String address : BungeeConfig.Subscriptions.keySet()) {
-            getLogger().info("* " + address + (BungeeConfig.Subscriptions.get(address)!=null?" | Encrypted":""));
+        for (ServerEntry serverEntry : BungeeConfig.Subscriptions.keySet()) {
+            getLogger().info("* " + serverEntry.getAddress() + (BungeeConfig.Subscriptions.get(serverEntry.getAddress())!=null?" | Encrypted":""));
         }
 
         getLogger().info("Third-party Banning Plugin Support -----");
@@ -146,5 +151,9 @@ public class UniBanBungeePlugin extends Plugin {
 
     public static UniBanBungeePlugin getInstance() {
         return instance;
+    }
+
+    public BungeeConfig getBungeeConfig() {
+        return bungeeConfig;
     }
 }

@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class BukkitCommand implements CommandExecutor, TabExecutor {
     UniBanBukkitPlugin plugin;
     BukkitCommandController commandController;
-    private String[] commands = {"help", "check", "whitelist", "reload"};
+    private String[] commands = {"help", "check", "subscribe", "share", "whitelist", "exempt", "reload"};
     private String[] whitelistSubcommands = {"add", "remove"};
 
     public BukkitCommand(UniBanBukkitPlugin instance) {
         this.plugin = instance;
-        commandController = new BukkitCommandController(instance);
+        commandController = new BukkitCommandController(instance, plugin.getBukkitConfig());
     }
 
     @Override
@@ -51,7 +51,10 @@ public class BukkitCommand implements CommandExecutor, TabExecutor {
             return new ArrayList<>();
         else if (args.length == 2)
             if (args[0].equalsIgnoreCase("whitelist"))
-                return Arrays.stream(whitelistSubcommands).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+                // Fix: Tab complete won't work for sub-commands
+                return Arrays.stream(whitelistSubcommands).filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
+            else if (args[0].equalsIgnoreCase("exempt"))
+                return Arrays.stream(plugin.getBukkitConfig().getSubscriptions()).filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
             else
                 return new ArrayList<>();
         else if (args.length == 1)
