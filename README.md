@@ -130,7 +130,9 @@ Message:
 
 ### 1.0
 
-* Add: A quick way to add/share subscriptions
+* Add:
+  * A quick way to add/share subscriptions
+  * Exempt a server by executing a command
 * Fix:
   * Configuration will not be reloaded on Bungeecord
   * Misleading message when failed resolving ban-list caused by wrong password
