@@ -25,7 +25,7 @@ public class UpdateCheckTask implements Runnable {
             if (version.equalsIgnoreCase(this.version)) {
                 System.out.println("[UniBan] You are up-to-date.");
             } else {
-                System.out.println("[UniBan] There is a newer version (" + version + ") available at §n https://www.spigotmc.org/resources/uniban-a-decentralized-ban-list-sharing-subscribing-plugin.74747/");
+                System.out.println("[UniBan] There is a newer version (" + version + ") available at §n https://www.spigotmc.org/resources/74747/");
             }
         });
     }

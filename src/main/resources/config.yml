@@ -3,6 +3,7 @@ Settings:
   # Set to -1 to disable
   WarnThreshold: 1
   BanThreshold: 1
+  #TemporarilyPauseUpdateThreshold: 5
   Broadcast:
     Enabled: true
     Host: '0.0.0.0'

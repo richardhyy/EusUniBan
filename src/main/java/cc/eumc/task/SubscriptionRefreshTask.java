@@ -23,6 +23,8 @@ import java.util.UUID;
 public class SubscriptionRefreshTask implements Runnable {
     final UniBanController controller;
     boolean running = false;
+    //Map<String, Integer> lastUpdateCountMap = new HashMap<>();
+
     public SubscriptionRefreshTask(UniBanController instance) {
         this.controller = instance;
     }
@@ -36,6 +38,10 @@ public class SubscriptionRefreshTask implements Runnable {
 
         int count = 0;
         for (ServerEntry serverEntry : PluginConfig.Subscriptions.keySet()) {
+            /*if (!lastUpdateCountMap.containsKey(serverEntry.getAddress())) {
+                // Mark as pending (update count check will not be performed this time)
+                lastUpdateCountMap.put(serverEntry.getAddress(), -1);
+            }*/
             String host = serverEntry.host;
             int port = serverEntry.port;
 
@@ -67,6 +73,20 @@ public class SubscriptionRefreshTask implements Runnable {
                             //plugin.getLogger().warning(result);
                             continue;
                         }
+
+                        /*
+                        // Update count check
+                        if (lastUpdateCountMap.get(serverEntry.getAddress()) == -1) {
+                            lastUpdateCountMap.put(serverEntry.getAddress(), banList.size());
+                        }
+                        else if (Math.abs(lastUpdateCountMap.get(serverEntry.getAddress()) - banList.size()) >= PluginConfig.TemporarilyPauseUpdateThreshold) {
+                            lastUpdateCountMap.put(serverEntry.getAddress(), -1);
+                        }
+                        else {
+                            lastUpdateCountMap.put(serverEntry.getAddress(), banList.size());
+                        }
+                         */
+
                         if (banList.size() == 0) {
                             continue;
                         }

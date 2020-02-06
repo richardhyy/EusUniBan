@@ -31,6 +31,7 @@ public abstract class PluginConfig {
 
     public static Map<ServerEntry, Key> Subscriptions = new HashMap<>(); // Address - Key
     //public static Map<String, String> SubscriptionServerHostIDMap = new HashMap<>();
+    public static int TemporarilyPauseUpdateThreshold;
 
     public static List<String> UUIDWhitelist;
 
@@ -78,6 +79,8 @@ public abstract class PluginConfig {
                 //Bukkit.getScheduler().runTaskLater(instance, new IdentifySubscriptionTask(instance), 1);
             }
         }
+
+        //TemporarilyPauseUpdateThreshold = configGetInt("Settings.TemporarilyPauseUpdateThreshold", 10);
 
         EnabledAccessControl = configGetBoolean("Settings.Broadcast.AccessControl.Enabled", true);
         if (EnabledAccessControl) {
