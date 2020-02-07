@@ -55,10 +55,14 @@ A decentralized ban-list sharing plugin for Minecraft server.
 
 ```yaml
 Subscription:
-  0: #tag of the server, must be unique, can be customized
-    Host: 'example.com' #Host name or IP
-    Port: 60009 #Port of UniBan Broadcast
-    Password: 'UniBan' #You may ask for the password from the server owner
+  '0': # tag of the server, must be unique, can be customized
+    Host: 'example.com' # Host name or IP
+    Port: 60009 # Port of UniBan Broadcast
+    Password: 'UniBan' # You may ask for the password from the server owner
+  '1KBN':
+    Host: 'www.eumc.cc/uniban'
+    Port: 443 # Use SSL (or 80 if you want to use HTTP)
+    #Password: '' # No password
 ```
 
 
