@@ -19,7 +19,7 @@ public class BungeeConfig extends PluginConfig {
         );
 
         // T√ODO Support for bungeecord
-        EnableBroadcast = false;
+        // Fix: Broadcast disabled wrongly on BungeeCord
         this.plugin = instance;
     }
 

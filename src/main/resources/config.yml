@@ -1,8 +1,9 @@
-ConfigVersion: 2
+ConfigVersion: 3
 Settings:
   # Set to -1 to disable
   WarnThreshold: 1
   BanThreshold: 1
+  IgnoreOP: true
   #TemporarilyPauseUpdateThreshold: 5
   Broadcast:
     Enabled: true
@@ -38,3 +39,39 @@ UUIDWhitelist:
 Message:
   WarningMessage: '&bUniban &3&l> &eWarning: Player {player}({uuid}) has been banned from another {number} server(s).'
   BannedOnlineKickMessage: '&eSorry, you have been banned from another {number} server(s).'
+  MessagePrefix: 'UniBan &3> &r'
+  IgnoredOP: 'Ignored OP: %s'
+  PlayerNotExist: 'Player %s does not exist.'
+  PlayerState: 'Player %s state: %s'
+  PlayerBanned: '&cBanned from: '
+  PlayerNormal: '&anormal'
+  InvalidSubscriptionKey: '&eInvalid subscription key'
+  SubscriptionKeyAdded: 'Successfully added %s to your subscription list.'
+  YourSubscriptionKey: 'Here''s the sharing link of your server''s Subscription Key which contains your address and connection password:'
+  SubscriptionKeyLink: 'https://uniban.eumc.cc/share.php?key=%s'
+  SubscriptionExempted: 'Successfully exempted server %s from subscription list temporarily.'
+  FailedExempting: 'Failed exempting %s. Does that subscription exist?'
+  WhitelistAdded: 'Player %s has been added to whitelist'
+  WhitelistRemoved: 'Player %s has been removed from whitelist'
+  Reloaded: 'Reloaded.'
+  Error: 'Error: %s'
+  SubscriptionsHeader: 'Subscriptions [%s] -----'
+  ThirdPartyPluginSupportHeader: 'Third-party Banning Plugin Support -----'
+  Encrypted: 'Encrypted'
+  PluginEnabled: '&lEnabled'
+  PluginNotFound: '&oNot Found'
+  BroadcastStarted: 'UniBan broadcast started on %s:%s (%s Threads)'
+  BroadcastFailed: 'Failed starting broadcast server'
+  UpToDate: 'You are up-to-date.'
+  NewVersionAvailable: 'There is a newer version %s available at §n https://www.spigotmc.org/resources/74747/'
+  InvalidSpigotResourceID: 'It looks like you are using an unsupported version of UniBan. Please manually look for update.'
+  FailedCheckingUpdate: 'Error occurred when checking update'
+  LoadedFromLocalCache: 'Loaded %s banned players from ban-list cache.'
+  HelpMessageHeader: 'Usage:'
+  HelpMessageList:
+    - '/uniban check <&lPlayer/UUID&r>'
+    - '/uniban whitelist <“&ladd&r”/“&lremove&r”> <&lPlayer/UUID>'
+    - '/uniban share <&lYour Server Hostname&r, eg. &nexample.com&r>'
+    - '/uniban subscribe <&lSubscription Key&r>'
+    - '/uniban exempt <&lServer Address&r>'
+    - '/uniban reload'

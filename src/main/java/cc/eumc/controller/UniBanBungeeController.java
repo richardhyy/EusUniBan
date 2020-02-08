@@ -1,6 +1,8 @@
 package cc.eumc.controller;
 
 import cc.eumc.UniBanBungeePlugin;
+import cc.eumc.config.BungeeConfig;
+import cc.eumc.config.Message;
 import net.md_5.bungee.config.Configuration;
 
 import java.io.File;
@@ -12,13 +14,14 @@ public class UniBanBungeeController extends UniBanController {
 
     public UniBanBungeeController() {
         super();
-        /*
+
+        // Fix: Broadcast status will not be displayed on BungeeCord
         if (super.serverStarted) {
-            sendInfo("UniBan broadcast started on " + BungeeConfig.Host + ":" + BungeeConfig.Port + " (" + BungeeConfig.Threads + " Threads)");
+            sendInfo(String.format(Message.BroadcastStarted, BungeeConfig.Host, BungeeConfig.Port, BungeeConfig.Threads));
         }
-        else {
-            sendSevere("Failed starting broadcast server");
-        }*/
+        else if (BungeeConfig.EnableBroadcast) {
+            sendSevere(Message.BroadcastFailed);
+        }
 
     }
 

@@ -1,10 +1,7 @@
 package cc.eumc;
 
 import cc.eumc.command.BungeeCommand;
-import cc.eumc.config.BungeeConfig;
-import cc.eumc.config.PluginConfig;
-import cc.eumc.config.ServerEntry;
-import cc.eumc.config.ThirdPartySupportConfig;
+import cc.eumc.config.*;
 import cc.eumc.controller.UniBanBungeeController;
 import cc.eumc.listener.BungeePlayerListener;
 import cc.eumc.task.LocalBanListRefreshTask;
@@ -92,16 +89,16 @@ public class UniBanBungeePlugin extends Plugin {
     }
 
     public void showPluginInformation() {
-        getLogger().info("Subscriptions [" + BungeeConfig.Subscriptions.size() + "] -----");
+        getLogger().info(String.format(Message.SubscriptionsHeader, BukkitConfig.Subscriptions.size()));
         for (ServerEntry serverEntry : BungeeConfig.Subscriptions.keySet()) {
-            getLogger().info("* " + serverEntry.getAddress() + (BungeeConfig.Subscriptions.get(serverEntry.getAddress())!=null?" | Encrypted":""));
+            getLogger().info("* " + serverEntry.getAddress() + (BungeeConfig.Subscriptions.get(serverEntry.getAddress())!=null?" | "+Message.Encrypted:""));
         }
 
-        getLogger().info("Third-party Banning Plugin Support -----");
-        getLogger().info("* AdvancedBan: " + (ThirdPartySupportConfig.AdvancedBan?"§lEnabled":"§oNot Found"));
-        //getLogger().info("* BungeeAdminTool: " + (ThirdPartySupportConfig.BungeeAdminTool?"§lEnabled":"§oNot Found"));
-        getLogger().info("* BungeeBan: " + (ThirdPartySupportConfig.BungeeBan?"§lEnabled":"§oNot Found"));
-        getLogger().info("* LiteBans: " + (ThirdPartySupportConfig.LiteBans?"§lEnabled":"§oNot Found"));
+        getLogger().info(Message.ThirdPartyPluginSupportHeader);
+        getLogger().info("* AdvancedBan: " + (ThirdPartySupportConfig.AdvancedBan?Message.PluginEnabled:Message.PluginNotFound));
+        //getLogger().info("* BungeeAdminTool: " + (ThirdPartySupportConfig.BungeeAdminTool?Message.PluginEnabled:Message.PluginNotFound));
+        getLogger().info("* BungeeBan: " + (ThirdPartySupportConfig.BungeeBan?Message.PluginEnabled: Message.PluginNotFound));
+        getLogger().info("* LiteBans: " + (ThirdPartySupportConfig.LiteBans?Message.PluginEnabled: Message.PluginNotFound));
     }
 
     public void reloadController() {

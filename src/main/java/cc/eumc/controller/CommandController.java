@@ -1,5 +1,6 @@
 package cc.eumc.controller;
 
+import cc.eumc.config.Message;
 import cc.eumc.config.PluginConfig;
 import cc.eumc.config.ServerEntry;
 import cc.eumc.exception.CommandBreakException;
@@ -7,18 +8,21 @@ import cc.eumc.util.Encryption;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public abstract class CommandController {
-    final static String MSGPREFIX = "UniBan §3> §r";
+    final String MSGPREFIX;
     final static Key SHARING_KEY = Encryption.getKeyFromString("UniBanSubscription");
     PluginConfig pluginConfig;
 
     public CommandController(PluginConfig pluginConfig) {
         this.pluginConfig = pluginConfig;
+        MSGPREFIX = Message.MessagePrefix;
     }
 
     public List<String> executeCommand(String[] args) throws CommandBreakException {
@@ -29,7 +33,7 @@ public abstract class CommandController {
         else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("reload")) {
                 doReload();
-                result.add(MSGPREFIX + " Reloaded.");
+                result.add(MSGPREFIX + Message.Reloaded);
             }
             else {
                 sendHelp(result);
@@ -37,46 +41,60 @@ public abstract class CommandController {
         }
         else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("check")) {
-                Boolean banned;
+                UUID uuid;
                 try {
-                    banned = isBannedOnline(UUID.fromString(args[1]));
+                    uuid = UUID.fromString(args[1]);
                 } catch (IllegalArgumentException e) {
                     Player player = Bukkit.getPlayer(args[1]);
                     if (player == null) {
-                        result.add(MSGPREFIX + " Player " + args[1] + " does not exist.");
+                        result.add(MSGPREFIX + String.format(Message.PlayerNotExist, args[1]));
                         throw new CommandBreakException();
                     }
                     else
-                        banned = isBannedOnline(player);
+                        uuid = player.getUniqueId();
                 }
-                result.add(MSGPREFIX + " Player " + args[0] + " state: " + (banned?"§cbanned by at least 1 server":"§anormal"));
+                Boolean banned = isBannedOnline(uuid);
+                result.add(MSGPREFIX + String.format(Message.PlayerState, args[1], banned?Message.PlayerBanned:Message.PlayerNormal));
+                if (banned) {
+                    result.addAll(getBannedServerList(uuid));
+                }
             }
             else if (args[0].equalsIgnoreCase("subscribe")) {
                 // T√ODO A quick way to add subscription
                 String subscriptionKey;
                 // subscriptionKey: <host>:<port>@<password>
                 if ((subscriptionKey = Encryption.decrypt(args[1], SHARING_KEY)) != null && (subscriptionKey.contains(":")&&subscriptionKey.contains("@"))) {
-                    String[] splited = subscriptionKey.split("@", 2);
-                    if (splited.length != 2) {
-                        result.add(MSGPREFIX + "§eInvalid subscription key: ");
+                    String[] split = subscriptionKey.split("@", 2);
+                    if (split.length != 2) {
+                        result.add(MSGPREFIX + Message.InvalidSubscriptionKey);
                         result.add(MSGPREFIX + args[1] + "->" + subscriptionKey);
                     }
                     else {
-                        String address = splited[0];
-                        pluginConfig.addSubscription(new ServerEntry(address), splited[1], true);
-                        result.add(MSGPREFIX + "Successfully added " + address + " to your subscription list.");
+                        String address = split[0];
+                        pluginConfig.addSubscription(new ServerEntry(address), split[1], true);
+                        result.add(MSGPREFIX + String.format(Message.SubscriptionKeyAdded, address));
                     }
                 }
                 else {
-                    result.add(MSGPREFIX + " Invalid subscription key.");
+                    result.add(MSGPREFIX + Message.InvalidSubscriptionKey);
                 }
             }
             else if (args[0].equalsIgnoreCase("share")) {
-                result.add("Here's the subscription key of your server which contains your address and connection password:");
-                result.add(MSGPREFIX + Encryption.encrypt(args[1] + ":" + PluginConfig.Port + "@" + PluginConfig.Password, SHARING_KEY));
+                String key = Encryption.encrypt(args[1] + ":" + PluginConfig.Port + "@" + PluginConfig.Password, SHARING_KEY);
+                if (key == null) {
+                    result.add(MSGPREFIX + String.format(Message.Error, "Failed generating Subscription Key."));
+                }
+                else {
+                    result.add(MSGPREFIX + Message.YourSubscriptionKey);
+                    try {
+                        result.add(MSGPREFIX + String.format(Message.SubscriptionKeyLink, URLEncoder.encode(key, "UTF-8")));
+                    } catch (UnsupportedEncodingException e) {
+                        result.add(MSGPREFIX + key);
+                    }
+                }
             }
             else if (args[0].equalsIgnoreCase("exempt")) {
-                result.add(MSGPREFIX + (pluginConfig.removeSubscription(args[1], false)?("Successfully exempted server " + args[1] + " from subscription list temporarily."):"Failed exempting. Does that subscription exist?"));
+                result.add(MSGPREFIX + (pluginConfig.removeSubscription(args[1], false)?(String.format(Message.SubscriptionExempted, args[1])): String.format(Message.FailedExempting, args[1])));
             }
             else {
                 sendHelp(result);
@@ -90,13 +108,13 @@ public abstract class CommandController {
                     } catch (IllegalArgumentException e) {
                         Player player = Bukkit.getPlayer(args[2]);
                         if (player == null) {
-                            result.add(MSGPREFIX + " Player " + args[2] + " does not exist.");
+                            result.add(MSGPREFIX + String.format(Message.PlayerNotExist, args[2]));
                             throw new CommandBreakException();
                         }
                         else
                             addWhitelist(player.getUniqueId());
                     }
-                    result.add("Player " + args[2] + " has been added to whitelist");
+                    result.add(MSGPREFIX + String.format(Message.WhitelistAdded, args[2]));
                 }
                 else if (args[1].equalsIgnoreCase("remove")) {
                     try {
@@ -104,13 +122,13 @@ public abstract class CommandController {
                     } catch (IllegalArgumentException e) {
                         Player player = Bukkit.getPlayer(args[2]);
                         if (player == null) {
-                            result.add(MSGPREFIX + " Player " + args[2] + " does not exist.");
+                            result.add(MSGPREFIX + String.format(Message.PlayerNotExist, args[2]));
                             throw new CommandBreakException();
                         }
                         else
                             removeWhitelist(player.getUniqueId());
                     }
-                    result.add("Player " + args[2] + " has been removed from whitelist");
+                    result.add(MSGPREFIX + String.format(Message.WhitelistRemoved, args[2]));
                 }
             }
             else {
@@ -121,17 +139,13 @@ public abstract class CommandController {
     }
 
     void sendHelp(List<String> result) {
-        result.add(MSGPREFIX + "/uniban check <§lPlayer/UUID§r>");
-        result.add(MSGPREFIX + "/uniban whitelist <“§ladd§r”/“§lremove§r”> <§lPlayer/UUID>");
-        result.add(MSGPREFIX + "/uniban share <§lYour Server Hostname§r, eg. §nexample.com§r>");
-        result.add(MSGPREFIX + "/uniban subscribe <§lSubscription Key§r>");
-        result.add(MSGPREFIX + "/uniban exempt <§lServer Address§r>");
-        result.add(MSGPREFIX + "/uniban reload");
+        result.add(MSGPREFIX + Message.HelpMessageHeader);
+        result.addAll(Message.HelpMessageList);
     }
 
     abstract void doReload();
-    abstract boolean isBannedOnline(Player player);
     abstract boolean isBannedOnline(UUID uuid);
+    abstract List<String> getBannedServerList(UUID uuid);
     abstract void addWhitelist(UUID uuid);
     abstract void removeWhitelist(UUID uuid);
 }

@@ -36,6 +36,10 @@ public class SubscriptionRefreshTask implements Runnable {
         }
         running = true;
 
+        if (PluginConfig.Subscriptions.size() == 0) {
+            return;
+        }
+
         int count = 0;
         for (ServerEntry serverEntry : PluginConfig.Subscriptions.keySet()) {
             /*if (!lastUpdateCountMap.containsKey(serverEntry.getAddress())) {

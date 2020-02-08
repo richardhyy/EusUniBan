@@ -1,10 +1,12 @@
 package cc.eumc.controller;
 
+import cc.eumc.config.Message;
 import cc.eumc.config.PluginConfig;
 import cc.eumc.handler.BanListRequestHandler;
 import cc.eumc.handler.IDRequestHandler;
 import cc.eumc.util.Encryption;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.istack.internal.NotNull;
 import com.sun.net.httpserver.HttpServer;
 import org.json.simple.JSONArray;
@@ -100,7 +102,6 @@ public abstract class UniBanController {
                 else {
                     sendSevere("Invalid UUID: " + uuidStr);
                 }
-
             });
 
             /*
@@ -123,7 +124,7 @@ public abstract class UniBanController {
                 }
             });*/
 
-            sendInfo("Loaded " + count + " banned players from ban-list cache.");
+            sendInfo(String.format(Message.LoadedFromLocalCache, count));
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -175,7 +176,8 @@ public abstract class UniBanController {
         }
 
         try (FileWriter fw = new FileWriter(file)) {
-            fw.write(banListArray.toJSONString());
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            fw.write(gson.toJson(banListArray));
             fw.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -262,6 +264,10 @@ public abstract class UniBanController {
             return 0;
         else
             return fromServer.size();
+    }
+
+    public List<String> getBannedServerList(UUID uuid) {
+        return bannedPlayerOnline.get(uuid);
     }
 
     public void updateLocalBanListCache(Set<UUID> uuidSet) {

@@ -9,7 +9,7 @@ public abstract class PluginConfig {
     public static boolean LiteBans;
     public static boolean AdvancedBan;
 
-    public final static int PluginConfigVersion = 2;
+    public final static int PluginConfigVersion = 3;
 
     public static int ConfigVersion;
     public static boolean EnableBroadcast;
@@ -37,9 +37,7 @@ public abstract class PluginConfig {
 
     public static int WarnThreshold;
     public static int BanThreshold;
-
-    public static String WarningMessage;
-    public static String BannedOnlineKickMessage;
+    public static boolean IgnoreOP;
 
     public PluginConfig() {
         ConfigVersion =  configGetInt("ConfigVersion", -1);
@@ -101,9 +99,50 @@ public abstract class PluginConfig {
 
         WarnThreshold = configGetInt("Settings.WarnThreshold", 1);
         BanThreshold = configGetInt("Settings.BanThreshold", 1);
+        IgnoreOP = configGetBoolean("Settings.IgnoreOP", true);
 
-        WarningMessage = configGetString("Message.WarningMessage", "&bUniban &3&l> &eWarning: Player {player}({uuid}) has been banned from another {number} server(s).").replace("&", "§");
-        BannedOnlineKickMessage = configGetString("Message.BannedOnlineKickMessage", "§eSorry, you have been banned from another server.").replace("&", "§");
+        // Resolve #2
+        Message.WarningMessage = Message.replace(configGetString("Message.WarningMessage", "&bUniban &3&l> &eWarning: Player {player}({uuid}) has been banned from another {number} server(s)."));
+        Message.BannedOnlineKickMessage = Message.replace(configGetString("Message.BannedOnlineKickMessage", "§eSorry, you have been banned from another server."));
+        Message.IgnoredOP = Message.replace(configGetString("Message.IgnoredOP", "Ignored OP: %s"));
+        Message.MessagePrefix = Message.replace(configGetString("Message.MessagePrefix", "UniBan &3> &r"));
+        Message.Error = Message.replace(configGetString("Message.Error", "Error: %s"));
+        Message.Reloaded = Message.replace(configGetString("Message.Reloaded", "Reloaded."));
+        Message.PlayerNotExist = Message.replace(configGetString("Message.PlayerNotExist", "Player %s does not exist."));
+        Message.PlayerState = Message.replace(configGetString("Message.PlayerState", "Player %s state: %s"));
+        Message.PlayerBanned = Message.replace(configGetString("Message.PlayerBanned", "&cBanned by at least 1 server"));
+        Message.PlayerNormal = Message.replace(configGetString("Message.PlayerNormal", "&anormal"));
+        Message.InvalidSubscriptionKey = Message.replace(configGetString("Message.InvalidSubscriptionKey", "&eInvalid subscription key"));
+        Message.SubscriptionKeyAdded = Message.replace(configGetString("Message.SubscriptionKeyAdded", "Successfully added %s to your subscription list."));
+        Message.YourSubscriptionKey = Message.replace(configGetString("Message.YourSubscriptionKey", "Here's the sharing link of your server's Subscription Key which contains your address and connection password:"));
+        Message.SubscriptionKeyLink = Message.replace(configGetString("Message.SubscriptionKeyLink", "https://uniban.eumc.cc/share.php?key=%s"));
+        Message.SubscriptionExempted = Message.replace(configGetString("Message.SubscriptionExempted", "Successfully exempted server %s from subscription list temporarily."));
+        Message.FailedExempting = Message.replace(configGetString("Message.FailedExempting", "Failed exempting %s. Does that subscription exist?"));
+        Message.WhitelistAdded = Message.replace(configGetString("Message.WhitelistAdded", "Player %s has been added to whitelist"));
+        Message.WhitelistRemoved = Message.replace(configGetString("Message.WhitelistRemoved", "Player %s has been removed from whitelist"));
+        Message.SubscriptionsHeader = Message.replace(configGetString("Message.SubscriptionsHeader", "Subscriptions [%s] -----"));
+        Message.ThirdPartyPluginSupportHeader = Message.replace(configGetString("Message.ThirdPartyPluginSupportHeader", "Third-party Banning Plugin Support -----"));
+        Message.Encrypted = Message.replace(configGetString("Message.Encrypted", "Encrypted"));
+        Message.PluginEnabled = Message.replace(configGetString("Message.PluginEnabled", "&lEnabled"));
+        Message.PluginNotFound = Message.replace(configGetString("Message.PluginNotFound", "&oNot Found"));
+        Message.Encrypted = Message.replace(configGetString("Message.Encrypted", "Encrypted"));
+        Message.BroadcastStarted = Message.replace(configGetString("Message.BroadcastStarted", "UniBan broadcast started on %s:%s (%s Threads)"));
+        Message.BroadcastFailed = Message.replace(configGetString("Message.BroadcastFailed", "Failed starting broadcast server"));
+        Message.UpToDate = Message.replace(configGetString("Message.UpToDate", "You are up-to-date."));
+        Message.NewVersionAvailable = Message.replace(configGetString("Message.NewVersionAvailable", "There is a newer version %s available at §n https://www.spigotmc.org/resources/74747/"));
+        Message.InvalidSpigotResourceID = Message.replace(configGetString("Message.InvalidSpigotResourceID", "It looks like you are using an unsupported version of UniBan. Please manually look for update."));
+        Message.FailedCheckingUpdate = Message.replace(configGetString("Message.FailedCheckingUpdate", "Error occurred when checking update"));
+        Message.LoadedFromLocalCache = Message.replace(configGetString("Message.LoadedFromLocalCache", "Loaded %s banned players from ban-list cache."));
+        Message.HelpMessageHeader = Message.replace(configGetString("Message.HelpMessageHeader", "Usage:"));
+        Message.HelpMessageList = Message.replace(configGetStringList("Message.HelpMessageList"));
+        if (Message.HelpMessageList.size() == 0) {
+            Message.HelpMessageList = Arrays.asList("/uniban check <§lPlayer/UUID§r>",
+                    "/uniban whitelist <“§ladd§r”/“§lremove§r”> <§lPlayer/UUID>",
+                    "/uniban share <§lYour Server Hostname§r, eg. §nexample.com§r>",
+                    "/uniban subscribe <§lSubscription Key§r>",
+                    "/uniban exempt <§lServer Address§r>",
+                    "/uniban reload");
+        }
     }
 
 

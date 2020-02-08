@@ -2,6 +2,7 @@ package cc.eumc.controller;
 
 import cc.eumc.UniBanBukkitPlugin;
 import cc.eumc.config.BukkitConfig;
+import cc.eumc.config.Message;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -13,10 +14,10 @@ public class UniBanBukkitController extends UniBanController {
         super();
         //this.plugin = instance;
         if (super.serverStarted) {
-            sendInfo("UniBan broadcast started on " + BukkitConfig.Host + ":" + BukkitConfig.Port + " (" + BukkitConfig.Threads + " Threads)");
+            sendInfo(String.format(Message.BroadcastStarted, BukkitConfig.Host, BukkitConfig.Port, BukkitConfig.Threads));
         }
         else if (BukkitConfig.EnableBroadcast) {
-            sendSevere("Failed starting broadcast server");
+            sendSevere(Message.BroadcastFailed);
         }
     }
 

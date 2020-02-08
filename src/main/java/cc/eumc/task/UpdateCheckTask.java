@@ -1,5 +1,7 @@
 package cc.eumc.task;
 
+import cc.eumc.config.Message;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -20,12 +22,12 @@ public class UpdateCheckTask implements Runnable {
     public void run() {
         getVersion(version -> {
             if (version.equalsIgnoreCase("Invalid resource")) {
-                System.out.println("[UniBan] It looks like you are using an unsupported version of UniBan. Please manually look for update.");
+                System.out.println(Message.MessagePrefix + Message.InvalidSpigotResourceID);
             }
             if (version.equalsIgnoreCase(this.version)) {
-                System.out.println("[UniBan] You are up-to-date.");
+                System.out.println(Message.MessagePrefix + Message.UpToDate);
             } else {
-                System.out.println("[UniBan] There is a newer version (" + version + ") available at §n https://www.spigotmc.org/resources/74747/");
+                System.out.println(Message.MessagePrefix + String.format(Message.NewVersionAvailable, version));
             }
         });
     }
@@ -36,7 +38,7 @@ public class UpdateCheckTask implements Runnable {
                 consumer.accept(scanner.next());
             }
         } catch (IOException e) {
-            System.out.println("[UniBan] Error occurred when checking update.");
+            System.out.println(Message.MessagePrefix + Message.FailedCheckingUpdate);
         }
     }
 }

@@ -2,8 +2,8 @@ package cc.eumc.controller;
 
 import cc.eumc.UniBanBungeePlugin;
 import cc.eumc.config.BungeeConfig;
-import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public class BungeeCommandController extends CommandController {
@@ -21,13 +21,13 @@ public class BungeeCommandController extends CommandController {
     }
 
     @Override
-    boolean isBannedOnline(Player player) {
-        return isBannedOnline(player.getUniqueId());
+    boolean isBannedOnline(UUID uuid) {
+        return plugin.getController().isBannedOnline(uuid);
     }
 
     @Override
-    boolean isBannedOnline(UUID uuid) {
-        return plugin.getController().isBannedOnline(uuid);
+    List<String> getBannedServerList(UUID uuid) {
+        return plugin.getController().getBannedServerList(uuid);
     }
 
     @Override

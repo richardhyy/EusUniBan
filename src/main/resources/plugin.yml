@@ -14,5 +14,4 @@ permissions:
     default: op
     description: Permission for getting notified when a player who is banned by more than threshold settings logining
   uniban.ignore:
-    default: op
     description: Ignore online ban & warning threshold
