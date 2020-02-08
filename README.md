@@ -184,7 +184,7 @@ Message:
   * NoClassDefFoundError on BungeeCord
   * Broadcast disabled wrongly on BungeeCord
 * Change:
-  * Re*add the OP check in case a server does not use permission
+  * Re-add the OP check in case a server does not use permission
   * Subscription refreshing messages will not be displayed now if the subscription list is empty
   * OP will not have “uniban.ignore” permission by default now in order to make “Ignore OP” check functioning
 
