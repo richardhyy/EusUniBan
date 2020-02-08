@@ -176,7 +176,7 @@ Message:
   * Localization Support
   * Operators can now inspect the servers that a player was banned from 
   * Cached ban-list is now saved in an easy*to*read way
-  * Sharing Subscription Key is easier than before (/uniban share <Hostname>, and then click on the URL)
+  * Sharing Subscription Key is easier than before (/uniban share \<Hostname\>, and then click on the URL)
   * Now you can toggle ignoring ban check for OPs, and get a notification in console if an OP is banned somewhere
 * Fix:
   * Error when executing **/uniban check** command on BungeeCord in some cases
