@@ -45,7 +45,7 @@ A decentralized ban-list sharing plugin for Minecraft server.
 | ------------------ | ------------------------------------------------------------ | ------- |
 | uniban.admin       | Permission to use /uniban command                            | ops     |
 | uniban.getnotified | Permission to get notified when a player who reached the warning threshold enters | ops     |
-| uniban.ignore      | Permission to bypass warning and banning                     | ops     |
+| uniban.ignore      | Permission to bypass warning and banning                     | null    |
 
 
 
@@ -70,12 +70,14 @@ Subscription:
 ## Configuration
 
 ```yaml
-ConfigVersion: 2
+ConfigVersion: 3
 Settings:
   # Warn players with permission "uniban.getnotified" if they are banned by more than the value below, set to -1 to disable
   WarnThreshold: 1
   # Prevent players without permission "uniban.ignore" entering the server if they are banned by more than the value below, set to -1 to disable
   BanThreshold: 2
+  # Whether an OP should be ignored by online-ban check
+  IgnoreOP: true
   Broadcast:
     Enabled: true
     # 0.0.0.0 if you want other servers access your ban-list
@@ -115,8 +117,44 @@ Subscription:
 UUIDWhitelist: []
 Message:
   # '&' will automatically be replace by '§'
-  WarningMessage: '&bUniban &3&l> &ePlayer {player}{uuid} has been banned from another {number} server(s).'
+  WarningMessage: '&bUniban &3&l> &eWarning: Player {player}({uuid}) has been banned from another {number} server(s).'
   BannedOnlineKickMessage: '&eSorry, you have been banned from another {number} server(s).'
+  MessagePrefix: 'UniBan &3> &r'
+  IgnoredOP: 'Ignored OP: %s'
+  PlayerNotExist: 'Player %s does not exist.'
+  PlayerState: 'Player %s state: %s'
+  PlayerBanned: '&cBanned from: '
+  PlayerNormal: '&anormal'
+  InvalidSubscriptionKey: '&eInvalid subscription key'
+  SubscriptionKeyAdded: 'Successfully added %s to your subscription list.'
+  YourSubscriptionKey: 'Here''s the sharing link of your server''s Subscription Key which contains your address and connection password:'
+  SubscriptionKeyLink: 'https://uniban.eumc.cc/share.php?key=%s'
+  SubscriptionExempted: 'Successfully exempted server %s from subscription list temporarily.'
+  FailedExempting: 'Failed exempting %s. Does that subscription exist?'
+  WhitelistAdded: 'Player %s has been added to whitelist'
+  WhitelistRemoved: 'Player %s has been removed from whitelist'
+  Reloaded: 'Reloaded.'
+  Error: 'Error: %s'
+  SubscriptionsHeader: 'Subscriptions [%s] -----'
+  ThirdPartyPluginSupportHeader: 'Third-party Banning Plugin Support -----'
+  Encrypted: 'Encrypted'
+  PluginEnabled: '&lEnabled'
+  PluginNotFound: '&oNot Found'
+  BroadcastStarted: 'UniBan broadcast started on %s:%s (%s Threads)'
+  BroadcastFailed: 'Failed starting broadcast server'
+  UpToDate: 'You are up-to-date.'
+  NewVersionAvailable: 'There is a newer version %s available at §n https://www.spigotmc.org/resources/74747/'
+  InvalidSpigotResourceID: 'It looks like you are using an unsupported version of UniBan. Please manually look for update.'
+  FailedCheckingUpdate: 'Error occurred when checking update'
+  LoadedFromLocalCache: 'Loaded %s banned players from ban-list cache.'
+  HelpMessageHeader: 'Usage:'
+  HelpMessageList:
+    - '/uniban check <&lPlayer/UUID&r>'
+    - '/uniban whitelist <“&ladd&r”/“&lremove&r”> <&lPlayer/UUID>'
+    - '/uniban share <&lYour Server Hostname&r, eg. &nexample.com&r>'
+    - '/uniban subscribe <&lSubscription Key&r>'
+    - '/uniban exempt <&lServer Address&r>'
+    - '/uniban reload'
 ```
 
 
@@ -131,6 +169,24 @@ Message:
 
 
 ## Change Log
+
+### 1.1
+
+* Add:
+  * Localization Support
+  * Operators can now inspect the servers that a player was banned from 
+  * Cached ban-list is now saved in an easy*to*read way
+  * Sharing Subscription Key is easier than before (/uniban share <Hostname>, and then click on the URL)
+  * Now you can toggle ignoring ban check for OPs, and get a notification in console if an OP is banned somewhere
+* Fix:
+  * Error when executing **/uniban check** command on BungeeCord in some cases
+  * Broadcast status will not be displayed on BungeeCord
+  * NoClassDefFoundError on BungeeCord
+  * Broadcast disabled wrongly on BungeeCord
+* Change:
+  * Re*add the OP check in case a server does not use permission
+  * Subscription refreshing messages will not be displayed now if the subscription list is empty
+  * OP will not have “uniban.ignore” permission by default now in order to make “Ignore OP” check functioning
 
 ### 1.0
 
