@@ -28,7 +28,7 @@ public class BungeePlayerListener implements Listener {
 
         int count = plugin.getController().getBannedServerAmount(e.getConnection().getUniqueId());
         if (BukkitConfig.WarnThreshold > 0 && count >= BukkitConfig.WarnThreshold) {
-            String warningMessage = BukkitConfig.WarningMessage
+            String warningMessage = "[UniBan] " + BukkitConfig.WarningMessage
                     .replace("{player}", e.getConnection().getName())
                     .replace("{uuid}", e.getConnection().getUniqueId().toString())
                     .replace("{number}", String.valueOf(count));

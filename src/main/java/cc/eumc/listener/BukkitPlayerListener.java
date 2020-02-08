@@ -21,14 +21,14 @@ public class BukkitPlayerListener implements Listener {
             return;
         }
 
-        /* Replaced with hasPermission(uniban.ignore)
         if (e.getPlayer().isOp()) {
-            plugin.getLogger().info("Ignored OP: " + e.getPlayer().getName());
+            plugin.getLogger().info("[UniBan] Ignored OP: " + e.getPlayer().getName());
             return;
-        }*/
+        }
+
         int count = plugin.getController().getBannedServerAmount(e.getPlayer().getUniqueId());
         if (BukkitConfig.WarnThreshold > 0 && count >= BukkitConfig.WarnThreshold) {
-            String warningMessage = BukkitConfig.WarningMessage
+            String warningMessage = "[UniBan] " + BukkitConfig.WarningMessage
                     .replace("{player}", e.getPlayer().getName())
                     .replace("{uuid}", e.getPlayer().getUniqueId().toString())
                     .replace("{number}", String.valueOf(count));
