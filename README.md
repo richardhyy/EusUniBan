@@ -170,6 +170,14 @@ Message:
 
 ## Change Log
 
+### 1.2
+
+* Add:
+  * Extension support
+  * Set MinPeriodPerServer to 0 to turn Access Frequency Control off
+* Fix:
+  * Dependency configurations are not working properly on BungeeCord
+
 ### 1.1
 
 * Add:
