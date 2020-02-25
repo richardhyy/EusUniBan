@@ -3,7 +3,7 @@
 A decentralized ban-list sharing plugin for Minecraft server.
 
 ![ScreenShot.png](https://raw.githubusercontent.com/leavessoft/EusUniBan/master/ScreenShot.png)
-![Description_EN.png](https://raw.githubusercontent.com/leavessoft/EusUniBan/master/Description_EN.png)
+![Demo](https://home.uniban.eumc.cc/img/2_compressed.gif)
 
 ## Features
 
