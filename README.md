@@ -3,7 +3,7 @@
 A decentralized ban-list sharing plugin for Minecraft server.
 
 ![ScreenShot.png](https://raw.githubusercontent.com/leavessoft/EusUniBan/master/ScreenShot.png)
-![Description_EN.png](https://raw.githubusercontent.com/leavessoft/EusUniBan/master/Description_EN.png)
+![Demo](https://raw.githubusercontent.com/EusMC/UniBan-Website/master/img/2_compressed.gif)
 
 ## Features
 
@@ -13,6 +13,7 @@ A decentralized ban-list sharing plugin for Minecraft server.
 * It works with third-party banning plugins: including AdvancedBan, BungeeBan and LiteBans
 * Customizable warning & banning threshold
 * Encrypting your shared ban-list with customizable password
+* Extendable
 * Access control:
   * Server whitelist
   * Server blacklist
@@ -169,6 +170,14 @@ Message:
 
 
 ## Change Log
+
+### 1.2
+
+* Add:
+  * Extension support
+  * Set MinPeriodPerServer to 0 to turn Access Frequency Control off
+* Fix:
+  * Dependency configurations are not working properly on BungeeCord
 
 ### 1.1
 
