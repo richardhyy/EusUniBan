@@ -120,7 +120,7 @@ public class SubscriptionRefreshTask implements Runnable {
                 controller.sendWarning("Failed pulling ban-list from: " + host+":"+port + ". Increasing refreshing interval may help addressing this problem.");
             }
             catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 controller.sendWarning("Failed pulling ban-list from: " + host+":"+port);
             }
         }
