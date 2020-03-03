@@ -23,7 +23,8 @@ public class LiteBansSupport {
                     try {
                         UUID uuid = UUID.fromString(uuidStr);
                         // check if removed or expired
-                        if (Database.get().isPlayerBanned(uuid, null)) continue;
+                        // Fix: Logical error
+                        if (!Database.get().isPlayerBanned(uuid, null)) continue;
                         bannedUUID.add(uuid);
                     } catch (IllegalArgumentException ignore) {
                         System.out.println("Illegal UUID returned from LiteBans:" + uuidStr);

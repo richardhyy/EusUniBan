@@ -14,16 +14,33 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
-import java.net.SocketException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class SubscriptionRefreshTask implements Runnable {
+    private class CoolDown {
+        int total;
+        int remaining;
+
+        public CoolDown() {
+            this.total = 1;
+            this.remaining = 1;
+        }
+
+        public void next() {
+            this.remaining --;
+        }
+
+        public void reset() {
+            this.total ++;
+            this.remaining = this.total;
+        }
+    }
+
     final UniBanController controller;
     boolean running = false;
     //Map<String, Integer> lastUpdateCountMap = new HashMap<>();
+    Map<String, CoolDown> coolDownMap = new HashMap<>();
 
     public SubscriptionRefreshTask(UniBanController instance) {
         this.controller = instance;
@@ -42,6 +59,13 @@ public class SubscriptionRefreshTask implements Runnable {
 
         int count = 0;
         for (ServerEntry serverEntry : PluginConfig.Subscriptions.keySet()) {
+            // Check whether the server is suspended
+            CoolDown coolDown = coolDownMap.get(serverEntry.getAddress());
+            if (coolDown != null && coolDown.remaining > 0) {
+                coolDown.next();
+                continue;
+            }
+
             /*if (!lastUpdateCountMap.containsKey(serverEntry.getAddress())) {
                 // Mark as pending (update count check will not be performed this time)
                 lastUpdateCountMap.put(serverEntry.getAddress(), -1);
@@ -108,6 +132,9 @@ public class SubscriptionRefreshTask implements Runnable {
                             }
                         }
                         controller.purgeOnlineBannedOfHost(serverEntry.getAddress(), banList);
+                        if (coolDown != null) { // The connection has recovered.
+                            coolDownMap.remove(serverEntry.getAddress());
+                        }
                     }
                     // Fix: Misleading message when failed resolving ban-list caused by wrong password
                     catch (JsonSyntaxException e) {
@@ -116,12 +143,18 @@ public class SubscriptionRefreshTask implements Runnable {
                     }
                 }
             }
-            catch (SocketException e) {
-                controller.sendWarning("Failed pulling ban-list from: " + host+":"+port + ". Increasing refreshing interval may help addressing this problem.");
-            }
             catch (Exception e) {
+                // Dynamically adjust attempting frequency on fail
+                if (coolDown == null) {
+                    coolDown = new CoolDown();
+                }
+                else {
+                    coolDown.reset();
+                }
+                coolDownMap.put(serverEntry.getAddress(), coolDown);
+
                 //e.printStackTrace();
-                controller.sendWarning("Failed pulling ban-list from: " + host+":"+port);
+                controller.sendWarning("Failed pulling ban-list from: " + host+":"+port + ", we have suspended it for " + coolDown.remaining + " attempt" + (coolDown.remaining>1?"s":"") +".");
             }
         }
         controller.saveBanList();
@@ -134,8 +167,8 @@ public class SubscriptionRefreshTask implements Runnable {
         StringBuilder result = new StringBuilder();
         URL url = new URL(urlToRead);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setConnectTimeout(5000);
-        conn.setReadTimeout(5000);
+        conn.setConnectTimeout(1500);
+        conn.setReadTimeout(3000);
         conn.setRequestMethod("GET");
         BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String line;
@@ -149,6 +182,8 @@ public class SubscriptionRefreshTask implements Runnable {
     static String httpsGet(String urlTORead) throws Exception {
         URL myUrl = new URL(urlTORead);
         HttpsURLConnection conn = (HttpsURLConnection)myUrl.openConnection();
+        conn.setConnectTimeout(1500);
+        conn.setReadTimeout(3000);
         InputStream is = conn.getInputStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
