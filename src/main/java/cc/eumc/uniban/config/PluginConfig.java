@@ -9,10 +9,11 @@ public abstract class PluginConfig {
     public static boolean LiteBans;
     public static boolean AdvancedBan;
 
-    public final static int PluginConfigVersion = 3;
+    public final static int PluginConfigVersion = 4;
 
     public static int ConfigVersion;
     public static boolean EnableBroadcast;
+    public static boolean EnableDHT;
     public static double LocalBanListRefreshPeriod;
     public static double SubscriptionRefreshPeriod;
     public static String Host;
@@ -20,7 +21,7 @@ public abstract class PluginConfig {
     public static int Threads;
     public static String Password;
     public static Key EncryptionKey;
-    public static String ServerID;
+    public static String NodeID;
 
     public static boolean EnabledAccessControl;
     public static int MinPeriodPerServer;
@@ -45,6 +46,7 @@ public abstract class PluginConfig {
         // Fix: SubscriptionRefreshPeriod will not be loaded when broadcast is disabled
         SubscriptionRefreshPeriod = configGetDouble("Settings.Tasks.SubscriptionRefreshPeriod", 10.0);
         if (EnableBroadcast) {
+            EnableDHT = configGetBoolean("Settings.Broadcast.EnableDHT", true);
             LocalBanListRefreshPeriod = configGetDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1.0);
             Host = configGetString("Settings.Broadcast.Host", "0.0.0.0");
             Port = configGetInt("Settings.Broadcast.Port", 60009);
@@ -52,10 +54,10 @@ public abstract class PluginConfig {
             Password = configGetString("Settings.Broadcast.Password", "");
             EncryptionKey = Encryption.getKeyFromString(Password);
         }
-        ServerID = configGetString("Settings.Broadcast.ServerID", "");
-        if (ServerID.equals("")) {
-            ServerID = UUID.randomUUID().toString();
-            configSet("Settings.Broadcast.ServerID", ServerID);
+        NodeID = configGetString("Settings.Broadcast.NodeID", "");
+        if (NodeID.equals("")) {
+            NodeID = de.cgrotz.kademlia.node.Key.random().toString();
+            configSet("Settings.Broadcast.NodeID", NodeID);
             saveConfig();
         }
 
@@ -64,12 +66,30 @@ public abstract class PluginConfig {
         if (configIsSection("Subscription")) {
             for (String key : getConfigurationSectionKeys("Subscription")) {
                 String host = configGetString("Subscription."+key+".Host", "");
-                if (host.equals("")) continue;
-                int port = configGetInt("Subscription."+key+".Port", 60009);
+                int port;
+                if (host.equals("")) {
+                    if (!(host = configGetString("Subscription." + key + ".URL", "")).equals("")) {
+                        if (host.startsWith("https://")) {
+                            port = 443;
+                            host = host.replace("https://", "");
+                        }
+                        else {
+                            port = 80;
+                            host = host.replace("http://", "");
+                        }
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                else {
+                    port = configGetInt("Subscription." + key + ".Port", 60009);
+                }
                 String password = configGetString("Subscription."+key+".Password", "");
                 Key decryptionKey = null;
-                if (!password.equals(""))
+                if (!password.equals("")) {
                     decryptionKey = Encryption.getKeyFromString(password);
+                }
 
                 Subscriptions.put(new ServerEntry(host, port), decryptionKey);
 

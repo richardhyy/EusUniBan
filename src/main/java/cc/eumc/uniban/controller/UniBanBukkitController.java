@@ -3,6 +3,7 @@ package cc.eumc.uniban.controller;
 import cc.eumc.uniban.UniBanBukkitPlugin;
 import cc.eumc.uniban.config.BukkitConfig;
 import cc.eumc.uniban.config.Message;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -88,5 +89,10 @@ public class UniBanBukkitController extends UniBanController {
     @Override
     public void configSet(String path, Object object) {
         UniBanBukkitPlugin.getInstance().getConfig().set(path, object);
+    }
+
+    @Override
+    public void runTaskLater(Runnable task, int delayTick) {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(UniBanBukkitPlugin.getInstance(), task, delayTick);
     }
 }

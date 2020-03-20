@@ -5,6 +5,7 @@ import cc.eumc.uniban.controller.UniBanController;
 import cc.eumc.uniban.util.AdvancedBanSupport;
 import cc.eumc.uniban.util.BungeeBanSupport;
 import cc.eumc.uniban.util.LiteBansSupport;
+import cc.eumc.uniban.util.VanillaListSupport;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -53,6 +54,9 @@ public class LocalBanListRefreshTask implements Runnable {
         }
         if (ThirdPartySupportConfig.LiteBans) {
             uuidSet.addAll(LiteBansSupport.fetchAllBanned());
+        }
+        if (ThirdPartySupportConfig.VanillaList) {
+            uuidSet.addAll(VanillaListSupport.fetchAllBanned());
         }
 
         controller.updateLocalBanListCache(uuidSet);

@@ -3,6 +3,7 @@ package cc.eumc.uniban.config;
 import cc.eumc.uniban.UniBanBungeePlugin;
 import net.md_5.bungee.config.Configuration;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,15 +13,18 @@ public class BungeeConfig extends PluginConfig {
     public BungeeConfig(UniBanBungeePlugin instance) {
         super();
 
-        new ThirdPartySupportConfig( instance.getProxy().getPluginManager().getPlugin("AdvancedBan")!=null,
-                instance.getProxy().getPluginManager().getPlugin("BungeeAdminTool")!=null,
-                instance.getProxy().getPluginManager().getPlugin("BungeeBan")!=null,
-                instance.getProxy().getPluginManager().getPlugin("LiteBans")!=null
-        );
-
         // T√ODO Support for bungeecord
         // Fix: Broadcast disabled wrongly on BungeeCord
         this.plugin = instance;
+
+        new ThirdPartySupportConfig(plugin.getDataFolder(),
+                instance.getProxy().getPluginManager().getPlugin("AdvancedBan")!=null,
+                instance.getProxy().getPluginManager().getPlugin("BungeeAdminTool")!=null,
+                instance.getProxy().getPluginManager().getPlugin("BungeeBan")!=null,
+                instance.getProxy().getPluginManager().getPlugin("LiteBans")!=null,
+                new File(plugin.getDataFolder(), "banned-players.json").exists()
+        );
+
     }
 
 

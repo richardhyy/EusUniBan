@@ -13,6 +13,7 @@ import com.sun.istack.internal.NotNull;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import de.cgrotz.kademlia.node.Key;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class UniBanController {
     HttpServer server;
+    DeliveryController deliveryController;
     boolean serverStarted;
     List<UniBanExtension> extensions = new ArrayList<>();
 
@@ -54,6 +56,10 @@ public abstract class UniBanController {
             } catch (IOException e) {
                 e.printStackTrace();
                 serverStarted = false;
+            }
+
+            if (PluginConfig.EnableDHT) {
+                deliveryController = new DeliveryController(this);
             }
         }
 
@@ -341,6 +347,8 @@ public abstract class UniBanController {
     }
 
     public void updateLocalBanListCache(Set<UUID> uuidSet, boolean updateBanSetCache) {
+        if (localBanned.equals(uuidSet)) return;
+
         if (updateBanSetCache) localBanned = uuidSet;
 
         List<String> uuidStringList = new ArrayList<>();
@@ -353,10 +361,18 @@ public abstract class UniBanController {
             json = "";
         }
         this.banJson = json;
+
+        sendLocalBanListToDHT();
     }
 
     public String getBanListJson() {
         return banJson;
+    }
+
+    public void sendLocalBanListToDHT() {
+        if (!DeliveryController.isReady()) return;
+
+        deliveryController.put(Key.build(""), "{{banList}}" + getBanListJson() + "{{/banList}}");
     }
 
     public abstract void sendInfo(String message);
@@ -372,5 +388,7 @@ public abstract class UniBanController {
     public abstract Set<String> getConfigurationSectionKeys(String path);
 
     public abstract void configSet(String path, Object object);
+
+    public abstract void runTaskLater(Runnable task, int delayTick);
 
 }

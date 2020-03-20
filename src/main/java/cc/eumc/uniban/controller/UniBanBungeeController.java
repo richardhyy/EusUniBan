@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class UniBanBungeeController extends UniBanController {
 
@@ -94,4 +95,8 @@ public class UniBanBungeeController extends UniBanController {
         getConfig().set(path, object);
     }
 
+    @Override
+    public void runTaskLater(Runnable task, int delayTick) {
+        UniBanBungeePlugin.getInstance().getProxy().getScheduler().schedule(UniBanBungeePlugin.getInstance(), task, (int)((float)(delayTick)/20), TimeUnit.SECONDS);
+    }
 }

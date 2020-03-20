@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public abstract class CommandController {
     final String MSGPREFIX;
-    final static Key SHARING_KEY = Encryption.getKeyFromString("UniBanSubscription");
+    public final static Key SHARING_KEY = Encryption.getKeyFromString("UniBanSubscription");
     PluginConfig pluginConfig;
 
     public CommandController(PluginConfig pluginConfig) {

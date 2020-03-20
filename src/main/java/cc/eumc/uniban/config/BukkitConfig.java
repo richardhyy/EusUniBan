@@ -3,6 +3,7 @@ package cc.eumc.uniban.config;
 import cc.eumc.uniban.UniBanBukkitPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -11,13 +12,16 @@ public class BukkitConfig extends PluginConfig {
 
     public BukkitConfig(UniBanBukkitPlugin instance) {
         super();
-        new ThirdPartySupportConfig( instance.getServer().getPluginManager().isPluginEnabled("AdvancedBan"),
+        this.plugin = instance;
+
+        new ThirdPartySupportConfig(plugin.getDataFolder(),
+                instance.getServer().getPluginManager().isPluginEnabled("AdvancedBan"),
                 instance.getServer().getPluginManager().isPluginEnabled("BungeeAdminTool"),
                 instance.getServer().getPluginManager().isPluginEnabled("BungeeBan"),
-                instance.getServer().getPluginManager().isPluginEnabled("LiteBans")
+                instance.getServer().getPluginManager().isPluginEnabled("LiteBans"),
+                new File(plugin.getDataFolder(), "banned-players.json").exists()
                 );
 
-        this.plugin = instance;
         if (BukkitConfig.ConfigVersion != BukkitConfig.PluginConfigVersion) {
             instance.getLogger().warning("Your configuration version is " + BukkitConfig.ConfigVersion + " which may not be well supported by the plugin. It is suggested that you backup and delete it, then reload UniBan.");
         }

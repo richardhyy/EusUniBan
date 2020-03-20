@@ -70,6 +70,7 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
         //getLogger().info(Message.MessagePrefix + "* BungeeAdminTool: " + (ThirdPartySupportConfig.BungeeAdminTool?Message.PluginEnabled:Message.PluginNotFound));
         //getLogger().info(Message.MessagePrefix + "* BungeeBan: " + (ThirdPartySupportConfig.BungeeBan?Message.PluginEnabled:Message.PluginNotFound));
         getLogger().info("* LiteBans: " + (ThirdPartySupportConfig.LiteBans?Message.PluginEnabled:Message.PluginNotFound));
+        getLogger().info("* VanillaList: " + (ThirdPartySupportConfig.VanillaList?Message.PluginEnabled:Message.PluginNotFound));
     }
 
     public void reloadController() {

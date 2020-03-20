@@ -1,4 +1,4 @@
-ConfigVersion: 3
+ConfigVersion: 4
 Settings:
   # Set to -1 to disable
   WarnThreshold: 1
@@ -7,6 +7,7 @@ Settings:
   #TemporarilyPauseUpdateThreshold: 5
   Broadcast:
     Enabled: true
+    EnableDHT: false
     Host: '0.0.0.0'
     Port: 60009
     Threads: 2
@@ -28,10 +29,12 @@ Settings:
     SubscriptionRefreshPeriod: 10.0
 
 Subscription:
-  0:
+  ExampleServer:
     Host: 'server.eumc.cc'
     Port: 60009
     Password: 'UniBan'
+  PublicBanlistURLExample:
+    URL: 'https://uniban.eumc.cc/public'
 
 UUIDWhitelist:
   - '4bac238b-806f-4bb7-be4f-00ec9923387f'
