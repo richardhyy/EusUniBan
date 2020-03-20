@@ -171,6 +171,19 @@ Message:
 
 ## Change Log
 
+### 1.2.1
+
+* Add:
+  * Dynamically adjusting attempting intervals for each server, which is useful in situations where third-party servers are temporarily down
+
+* Change:
+  * Reduced connection timeout
+
+* Fix:
+  * Improved the stability when working with BungeeCord
+  * LiteBans support not functioning normally
+  * Console spam when UniBan failed connecting to third-party servers
+
 ### 1.2
 
 * Add:
