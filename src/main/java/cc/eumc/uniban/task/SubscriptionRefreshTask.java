@@ -167,8 +167,8 @@ public class SubscriptionRefreshTask implements Runnable {
         StringBuilder result = new StringBuilder();
         URL url = new URL(urlToRead);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setConnectTimeout(1500);
-        conn.setReadTimeout(3000);
+        conn.setConnectTimeout(PluginConfig.SubscriptionGetConnectTimeout);
+        conn.setReadTimeout(PluginConfig.SubscriptionGetReadTimeout);
         conn.setRequestMethod("GET");
         BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String line;
