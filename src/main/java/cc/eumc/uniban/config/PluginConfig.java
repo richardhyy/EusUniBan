@@ -16,6 +16,8 @@ public abstract class PluginConfig {
     public static boolean EnableDHT;
     public static double LocalBanListRefreshPeriod;
     public static double SubscriptionRefreshPeriod;
+    public static int SubscriptionGetConnectTimeout;
+    public static int SubscriptionGetReadTimeout;
     public static String Host;
     public static int Port;
     public static int Threads;
@@ -41,10 +43,12 @@ public abstract class PluginConfig {
     public static boolean IgnoreOP;
 
     public PluginConfig() {
-        ConfigVersion =  configGetInt("ConfigVersion", -1);
+        ConfigVersion = configGetInt("ConfigVersion", -1);
         EnableBroadcast = configGetBoolean("Settings.Broadcast.Enabled", true);
         // Fix: SubscriptionRefreshPeriod will not be loaded when broadcast is disabled
         SubscriptionRefreshPeriod = configGetDouble("Settings.Tasks.SubscriptionRefreshPeriod", 10.0);
+        SubscriptionGetConnectTimeout = configGetInt("Settings.Tasks.SubscriptionGetConnectTimeout", 1500);
+        SubscriptionGetReadTimeout = configGetInt("Settings.Tasks.SubscriptionGetReadTimeout", 3000);
         if (EnableBroadcast) {
             EnableDHT = configGetBoolean("Settings.Broadcast.EnableDHT", true);
             LocalBanListRefreshPeriod = configGetDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1.0);
@@ -65,27 +69,24 @@ public abstract class PluginConfig {
         Subscriptions = new HashMap<>();
         if (configIsSection("Subscription")) {
             for (String key : getConfigurationSectionKeys("Subscription")) {
-                String host = configGetString("Subscription."+key+".Host", "");
+                String host = configGetString("Subscription." + key + ".Host", "");
                 int port;
                 if (host.equals("")) {
                     if (!(host = configGetString("Subscription." + key + ".URL", "")).equals("")) {
                         if (host.startsWith("https://")) {
                             port = 443;
                             host = host.replace("https://", "");
-                        }
-                        else {
+                        } else {
                             port = 80;
                             host = host.replace("http://", "");
                         }
-                    }
-                    else {
+                    } else {
                         continue;
                     }
-                }
-                else {
+                } else {
                     port = configGetInt("Subscription." + key + ".Port", 60009);
                 }
-                String password = configGetString("Subscription."+key+".Password", "");
+                String password = configGetString("Subscription." + key + ".Password", "");
                 Key decryptionKey = null;
                 if (!password.equals("")) {
                     decryptionKey = Encryption.getKeyFromString(password);
@@ -194,8 +195,8 @@ public abstract class PluginConfig {
         if (save) {
             boolean isSaved = false;
             for (String key : getConfigurationSectionKeys("Subscription")) {
-                if (configGetString("Subscription."+key+".Host", "").equals(serverEntry.host)
-                && configGetInt("Subscription."+key+".Port", 0) == (serverEntry.port)) {
+                if (configGetString("Subscription." + key + ".Host", "").equals(serverEntry.host)
+                        && configGetInt("Subscription." + key + ".Port", 0) == (serverEntry.port)) {
                     configSet("Subscription." + key, null);
                     saveConfig();
                     isSaved = true;
@@ -218,14 +219,21 @@ public abstract class PluginConfig {
     }
 
     abstract boolean configGetBoolean(String path, Boolean def);
+
     abstract String configGetString(String path, String def);
+
     abstract Double configGetDouble(String path, Double def);
+
     abstract int configGetInt(String path, int def);
+
     abstract List<String> configGetStringList(String path);
+
     abstract boolean configIsSection(String path);
+
     abstract Set<String> getConfigurationSectionKeys(String path);
 
     abstract void configSet(String path, Object object);
+
     abstract void saveConfig();
 
 }
