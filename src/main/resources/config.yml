@@ -1,4 +1,4 @@
-ConfigVersion: 4
+ConfigVersion: 5
 Settings:
   # Set to -1 to disable
   WarnThreshold: 1
@@ -7,7 +7,11 @@ Settings:
   #TemporarilyPauseUpdateThreshold: 5
   Broadcast:
     Enabled: true
-    EnableDHT: false
+    #EnableDHT: false
+    ActiveMode:
+      Enabled: false
+      PostUrl: https://example.com/example.php
+      PostSecret: unibancopy
     Host: '0.0.0.0'
     Port: 60009
     Threads: 2
@@ -66,6 +70,7 @@ Message:
   PluginEnabled: '&lEnabled'
   PluginNotFound: '&oNot Found'
   BroadcastStarted: 'UniBan broadcast started on %s:%s (%s Threads)'
+  BroadcastActiveModeEnabled: 'UniBan broadcast service is running under active mode.'
   BroadcastFailed: 'Failed starting broadcast server'
   UpToDate: 'You are up-to-date.'
   NewVersionAvailable: 'There is a newer version %s available at §n https://www.spigotmc.org/resources/74747/'

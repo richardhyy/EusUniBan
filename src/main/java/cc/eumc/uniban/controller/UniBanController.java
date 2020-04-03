@@ -7,6 +7,7 @@ import cc.eumc.uniban.extension.UniBanExtension;
 import cc.eumc.uniban.handler.BanListRequestHandler;
 import cc.eumc.uniban.handler.IDRequestHandler;
 import cc.eumc.uniban.util.Encryption;
+import cc.eumc.uniban.util.HttpRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.istack.internal.NotNull;
@@ -23,6 +24,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,17 +47,19 @@ public abstract class UniBanController {
         loadBanListFromDisk();
 
         if (PluginConfig.EnableBroadcast) {
-            try {
-                server = HttpServer.create(new InetSocketAddress(PluginConfig.Host, PluginConfig.Port), 0);
-                server.createContext("/get", new BanListRequestHandler(this));
-                // experiential
-                server.createContext("/identify", new IDRequestHandler(this));
-                server.setExecutor(Executors.newFixedThreadPool(PluginConfig.Threads));
-                server.start();
-                serverStarted = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                serverStarted = false;
+            if (!PluginConfig.ActiveMode_Enabled) {
+                try {
+                    server = HttpServer.create(new InetSocketAddress(PluginConfig.Host, PluginConfig.Port), 0);
+                    server.createContext("/get", new BanListRequestHandler(this));
+                    // experiential
+                    server.createContext("/identify", new IDRequestHandler(this));
+                    server.setExecutor(Executors.newFixedThreadPool(PluginConfig.Threads));
+                    server.start();
+                    serverStarted = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    serverStarted = false;
+                }
             }
 
             if (PluginConfig.EnableDHT) {
@@ -373,6 +377,18 @@ public abstract class UniBanController {
         if (!DeliveryController.isReady()) return;
 
         deliveryController.put(Key.build(""), "{{banList}}" + getBanListJson() + "{{/banList}}");
+    }
+
+    public void sendLocalBanListToURL() {
+        try {
+            HttpRequest.post(new URL(PluginConfig.ActiveMode_PostUrl))
+                    .bodyForm(HttpRequest.Form.create().add("list", getBanListJson()).add("secret", PluginConfig.ActiveMode_PostSecret))
+                    .execute()
+                    .expectResponseCode(200);
+        } catch (IOException e) {
+            sendWarning("Error posting ban-list to remote url:");
+            e.printStackTrace();
+        }
     }
 
     public abstract void sendInfo(String message);

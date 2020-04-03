@@ -21,7 +21,12 @@ public class UniBanBungeeController extends UniBanController {
             sendInfo(String.format(Message.BroadcastStarted, BungeeConfig.Host, BungeeConfig.Port, BungeeConfig.Threads));
         }
         else if (BungeeConfig.EnableBroadcast) {
-            sendSevere(Message.BroadcastFailed);
+            if (BungeeConfig.ActiveMode_Enabled) {
+                sendInfo(Message.BroadcastActiveModeEnabled);
+            }
+            else {
+                sendSevere(Message.BroadcastFailed);
+            }
         }
 
     }

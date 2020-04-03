@@ -9,7 +9,7 @@ public abstract class PluginConfig {
     public static boolean LiteBans;
     public static boolean AdvancedBan;
 
-    public final static int PluginConfigVersion = 4;
+    public final static int PluginConfigVersion = 5;
 
     public static int ConfigVersion;
     public static boolean EnableBroadcast;
@@ -24,6 +24,9 @@ public abstract class PluginConfig {
     public static String Password;
     public static Key EncryptionKey;
     public static String NodeID;
+    public static boolean ActiveMode_Enabled;
+    public static String ActiveMode_PostUrl;
+    public static String ActiveMode_PostSecret;
 
     public static boolean EnabledAccessControl;
     public static int MinPeriodPerServer;
@@ -50,13 +53,21 @@ public abstract class PluginConfig {
         SubscriptionGetConnectTimeout = configGetInt("Settings.Tasks.SubscriptionGetConnectTimeout", 5000);
         SubscriptionGetReadTimeout = configGetInt("Settings.Tasks.SubscriptionGetReadTimeout", 5000);
         if (EnableBroadcast) {
-            EnableDHT = configGetBoolean("Settings.Broadcast.EnableDHT", true);
+            EnableDHT = configGetBoolean("Settings.Broadcast.EnableDHT", false);
             LocalBanListRefreshPeriod = configGetDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1.0);
-            Host = configGetString("Settings.Broadcast.Host", "0.0.0.0");
-            Port = configGetInt("Settings.Broadcast.Port", 60009);
-            Threads = configGetInt("Settings.Broadcast.Threads", 2);
-            Password = configGetString("Settings.Broadcast.Password", "");
-            EncryptionKey = Encryption.getKeyFromString(Password);
+
+            ActiveMode_Enabled = configGetBoolean("Settings.Broadcast.ActiveMode.Enabled", false);
+            if (ActiveMode_Enabled) {
+                ActiveMode_PostUrl = configGetString("Settings.Broadcast.ActiveMode.PostUrl", "");
+                ActiveMode_PostSecret = configGetString("Settings.Broadcast.ActiveMode.PostSecret", "");
+            }
+            else {
+                Host = configGetString("Settings.Broadcast.Host", "0.0.0.0");
+                Port = configGetInt("Settings.Broadcast.Port", 60009);
+                Threads = configGetInt("Settings.Broadcast.Threads", 2);
+                Password = configGetString("Settings.Broadcast.Password", "");
+                EncryptionKey = Encryption.getKeyFromString(Password);
+            }
         }
         NodeID = configGetString("Settings.Broadcast.NodeID", "");
         if (NodeID.equals("")) {
@@ -147,6 +158,7 @@ public abstract class PluginConfig {
         Message.PluginEnabled = Message.replace(configGetString("Message.PluginEnabled", "&lEnabled"));
         Message.PluginNotFound = Message.replace(configGetString("Message.PluginNotFound", "&oNot Found"));
         Message.Encrypted = Message.replace(configGetString("Message.Encrypted", "Encrypted"));
+        Message.BroadcastActiveModeEnabled = Message.replace(configGetString("Message.BroadcastActiveModeEnabled", "UniBan broadcast service is running under active mode."));
         Message.BroadcastStarted = Message.replace(configGetString("Message.BroadcastStarted", "UniBan broadcast started on %s:%s (%s Threads)"));
         Message.BroadcastFailed = Message.replace(configGetString("Message.BroadcastFailed", "Failed starting broadcast server"));
         Message.UpToDate = Message.replace(configGetString("Message.UpToDate", "You are up-to-date."));

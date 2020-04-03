@@ -1,5 +1,6 @@
 package cc.eumc.uniban.task;
 
+import cc.eumc.uniban.config.PluginConfig;
 import cc.eumc.uniban.config.ThirdPartySupportConfig;
 import cc.eumc.uniban.controller.UniBanController;
 import cc.eumc.uniban.util.AdvancedBanSupport;
@@ -60,6 +61,11 @@ public class LocalBanListRefreshTask implements Runnable {
         }
 
         controller.updateLocalBanListCache(uuidSet);
+
+        if (PluginConfig.ActiveMode_Enabled) {
+            controller.sendLocalBanListToURL();
+        }
+
         running = false;
     }
 }

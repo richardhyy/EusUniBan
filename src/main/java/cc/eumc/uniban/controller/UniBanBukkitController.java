@@ -18,7 +18,12 @@ public class UniBanBukkitController extends UniBanController {
             sendInfo(String.format(Message.BroadcastStarted, BukkitConfig.Host, BukkitConfig.Port, BukkitConfig.Threads));
         }
         else if (BukkitConfig.EnableBroadcast) {
-            sendSevere(Message.BroadcastFailed);
+            if (BukkitConfig.ActiveMode_Enabled) {
+                sendInfo(Message.BroadcastActiveModeEnabled);
+            }
+            else {
+                sendSevere(Message.BroadcastFailed);
+            }
         }
     }
 
