@@ -27,8 +27,8 @@ Settings:
     # Unit: minute
     LocalBanListRefreshPeriod: 1.0
     SubscriptionRefreshPeriod: 10.0
-    SubscriptionGetConnectTimeout: 1500
-    SubscriptionGetReadTimeout: 3000
+    SubscriptionGetConnectTimeout: 5000
+    SubscriptionGetReadTimeout: 5000
 
 Subscription:
   ExampleServer:

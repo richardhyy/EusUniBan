@@ -47,8 +47,8 @@ public abstract class PluginConfig {
         EnableBroadcast = configGetBoolean("Settings.Broadcast.Enabled", true);
         // Fix: SubscriptionRefreshPeriod will not be loaded when broadcast is disabled
         SubscriptionRefreshPeriod = configGetDouble("Settings.Tasks.SubscriptionRefreshPeriod", 10.0);
-        SubscriptionGetConnectTimeout = configGetInt("Settings.Tasks.SubscriptionGetConnectTimeout", 1500);
-        SubscriptionGetReadTimeout = configGetInt("Settings.Tasks.SubscriptionGetReadTimeout", 3000);
+        SubscriptionGetConnectTimeout = configGetInt("Settings.Tasks.SubscriptionGetConnectTimeout", 5000);
+        SubscriptionGetReadTimeout = configGetInt("Settings.Tasks.SubscriptionGetReadTimeout", 5000);
         if (EnableBroadcast) {
             EnableDHT = configGetBoolean("Settings.Broadcast.EnableDHT", true);
             LocalBanListRefreshPeriod = configGetDouble("Settings.Tasks.LocalBanListRefreshPeriod", 1.0);
