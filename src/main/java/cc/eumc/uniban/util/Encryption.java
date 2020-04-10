@@ -1,6 +1,6 @@
 package cc.eumc.uniban.util;
 
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
