@@ -34,7 +34,8 @@ public class BukkitPlayerListener implements Listener {
                         .replace("{number}", String.valueOf(count));
                 plugin.getLogger().info(warningMessage);
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (p.hasPermission("uniban.getnotified") || p.hasPermission("uniban.admin")) {
+                    if ((BukkitConfig.BroadcastWarning && p != e.getPlayer())
+                    || (p.hasPermission("uniban.getnotified") || p.hasPermission("uniban.admin"))) {
                         p.sendMessage(warningMessage);
                     }
                 }

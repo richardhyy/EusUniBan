@@ -11,6 +11,7 @@ public abstract class PluginConfig {
 
     public final static int PluginConfigVersion = 6;
 
+    public static boolean BroadcastWarning;
     public static int ConfigVersion;
     public static boolean EnableBroadcast;
     public static boolean EnableDHT;
@@ -132,6 +133,7 @@ public abstract class PluginConfig {
 
         UUIDWhitelist = configGetStringList("UUIDWhitelist");
 
+        BroadcastWarning = configGetBoolean("Settings.BroadcastWarning", false);
         WarnThreshold = configGetInt("Settings.WarnThreshold", 1);
         BanThreshold = configGetInt("Settings.BanThreshold", 1);
         IgnoreOP = configGetBoolean("Settings.IgnoreOP", true);

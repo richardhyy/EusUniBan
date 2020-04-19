@@ -1,13 +1,15 @@
 ConfigVersion: 6
 Settings:
+  # Everyone except the target will be warned if enabled
+  BroadcastWarning: false
   # Set to -1 to disable
   WarnThreshold: 1
   BanThreshold: 1
   IgnoreOP: true
-  #TemporarilyPauseUpdateThreshold: 5
+  # TemporarilyPauseUpdateThreshold: 5
   Broadcast:
     Enabled: true
-    #EnableDHT: false
+    # EnableDHT: false
     ActiveMode:
       Enabled: false
       PostUrl: https://example.com/example.php
@@ -16,7 +18,7 @@ Settings:
     Port: 60009
     Threads: 2
     Password: 'UniBan'
-    #Case-insensitive
+    # Case-insensitive
     ExcludeIfReasonContain:
       - 'local'
     AccessControl:

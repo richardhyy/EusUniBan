@@ -1,7 +1,7 @@
 package cc.eumc.uniban.listener;
 
 import cc.eumc.uniban.UniBanBungeePlugin;
-import cc.eumc.uniban.config.BukkitConfig;
+import cc.eumc.uniban.config.BungeeConfig;
 import cc.eumc.uniban.config.Message;
 import cc.eumc.uniban.config.PluginConfig;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -29,14 +29,21 @@ public class BungeePlayerListener implements Listener {
         }
 
         int count = plugin.getController().getBannedServerAmount(e.getConnection().getUniqueId());
-        if (BukkitConfig.WarnThreshold > 0 && count >= BukkitConfig.WarnThreshold) {
+        if (BungeeConfig.WarnThreshold > 0 && count >= BungeeConfig.WarnThreshold) {
             String warningMessage = Message.MessagePrefix + Message.WarningMessage
                     .replace("{player}", e.getConnection().getName())
                     .replace("{uuid}", e.getConnection().getUniqueId().toString())
                     .replace("{number}", String.valueOf(count));
             plugin.getLogger().info(warningMessage);
+
+            plugin.getProxy().getPlayers().forEach(proxiedPlayer -> {
+                if ((BungeeConfig.BroadcastWarning && proxiedPlayer.getUniqueId() != e.getConnection().getUniqueId())
+                || (proxiedPlayer.hasPermission("uniban.getnotified") || proxiedPlayer.hasPermission("uniban.admin"))) {
+                    proxiedPlayer.sendMessage(warningMessage);
+                }
+            });
         }
-        if (BukkitConfig.BanThreshold > 0 && count >= BukkitConfig.BanThreshold) {
+        if (BungeeConfig.BanThreshold > 0 && count >= BungeeConfig.BanThreshold) {
             BaseComponent[] reason = TextComponent.fromLegacyText(Message.BannedOnlineKickMessage.replace("{number}", String.valueOf(count)));
             e.getConnection().disconnect(reason);
             e.setCancelled(true);
