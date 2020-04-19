@@ -1,5 +1,6 @@
 package cc.eumc.uniban.util;
 
+import cc.eumc.uniban.controller.UniBanController;
 import net.craftminecraft.bungee.bungeeban.BanManager;
 import net.craftminecraft.bungee.bungeeban.banstore.BanEntry;
 
@@ -9,13 +10,17 @@ import java.util.Set;
 import java.util.UUID;
 
 public class BungeeBanSupport {
-    public static Set<UUID> fetchAllBanned() {
+    public static Set<UUID> fetchAllBanned(UniBanController controller) {
         List<BanEntry> banEntryList = BanManager.getBanList();
         if (banEntryList == null) return new HashSet<>();
 
         Set<UUID> bannedUUID = new HashSet<>();
 
         for (BanEntry banEntry : banEntryList) {
+            if (controller.shouldIgnoreReason(banEntry.getReason())) {
+                continue;
+            }
+
             String uuidStr = banEntry.getBanned();
 
             // Check if it returns with UUID without dashes

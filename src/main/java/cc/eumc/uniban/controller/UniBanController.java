@@ -391,6 +391,22 @@ public abstract class UniBanController {
         }
     }
 
+    public boolean shouldIgnoreReason(String reason) {
+        if (PluginConfig.ExcludeIfReasonContain.size() == 0 || reason == null) {
+            return false;
+        }
+
+        final String reasonLowerCase = reason.toLowerCase();
+
+        for (String keyword : PluginConfig.ExcludeIfReasonContain) {
+            if (reasonLowerCase.contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public abstract void sendInfo(String message);
     public abstract void sendWarning(String message);
     public abstract void sendSevere(String message);

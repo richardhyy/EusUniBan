@@ -1,5 +1,6 @@
 package cc.eumc.uniban.util;
 
+import cc.eumc.uniban.controller.UniBanController;
 import me.leoko.advancedban.manager.DatabaseManager;
 import me.leoko.advancedban.utils.SQLQuery;
 
@@ -9,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class AdvancedBanSupport {
-    public static Set<UUID> fetchAllBanned() {
+    public static Set<UUID> fetchAllBanned(UniBanController controller) {
         if (DatabaseManager.get() == null) return new HashSet<>();
 
         Set<UUID> bannedUUID = new HashSet<>();
@@ -19,6 +20,11 @@ public class AdvancedBanSupport {
             while (result.next()) {
                 try {
                     String uuidStr = result.getString("uuid");
+                    String reason = result.getString("reason");
+
+                    if (controller.shouldIgnoreReason(reason)) {
+                        continue;
+                    }
 
                     // AdvancedBan returns with UUID without dashes
                     if (!uuidStr.contains("-")) {

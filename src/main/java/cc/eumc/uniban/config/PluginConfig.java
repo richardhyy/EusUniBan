@@ -9,7 +9,7 @@ public abstract class PluginConfig {
     public static boolean LiteBans;
     public static boolean AdvancedBan;
 
-    public final static int PluginConfigVersion = 5;
+    public final static int PluginConfigVersion = 6;
 
     public static int ConfigVersion;
     public static boolean EnableBroadcast;
@@ -40,6 +40,7 @@ public abstract class PluginConfig {
     public static int TemporarilyPauseUpdateThreshold;
 
     public static List<String> UUIDWhitelist;
+    public static List<String> ExcludeIfReasonContain;
 
     public static int WarnThreshold;
     public static int BanThreshold;
@@ -68,6 +69,8 @@ public abstract class PluginConfig {
                 Password = configGetString("Settings.Broadcast.Password", "");
                 EncryptionKey = Encryption.getKeyFromString(Password);
             }
+
+            ExcludeIfReasonContain = new ArrayList<>(configGetStringList("Settings.Broadcast.ExcludeIfReasonContain"));
         }
         NodeID = configGetString("Settings.Broadcast.NodeID", "");
         if (NodeID.equals("")) {

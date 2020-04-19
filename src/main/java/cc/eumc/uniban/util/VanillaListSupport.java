@@ -1,6 +1,7 @@
 package cc.eumc.uniban.util;
 
 import cc.eumc.uniban.config.ThirdPartySupportConfig;
+import cc.eumc.uniban.controller.UniBanController;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -17,7 +18,7 @@ public class VanillaListSupport {
         public String reason;
     }
 
-    public static Set<UUID> fetchAllBanned() {
+    public static Set<UUID> fetchAllBanned(UniBanController controller) {
         Set<UUID> banned = new HashSet<>();
         File file = new File(ThirdPartySupportConfig.DataFolder, "banned-players.json");
         if (!file.exists()) {
@@ -31,7 +32,11 @@ public class VanillaListSupport {
             vanillaBanList = Arrays.asList(g.fromJson(reader, VanillaBan[].class));
 
             try {
-                vanillaBanList.forEach(vanillaBan -> banned.add(UUID.fromString(vanillaBan.uuid)));
+                vanillaBanList.forEach(vanillaBan -> {
+                    if (!controller.shouldIgnoreReason(vanillaBan.reason)) {
+                        banned.add(UUID.fromString(vanillaBan.uuid));
+                    }
+                });
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }

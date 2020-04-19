@@ -1,5 +1,6 @@
 package cc.eumc.uniban.util;
 
+import cc.eumc.uniban.controller.UniBanController;
 import litebans.api.Database;
 
 import java.sql.PreparedStatement;
@@ -10,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class LiteBansSupport {
-    public static Set<UUID> fetchAllBanned() {
+    public static Set<UUID> fetchAllBanned(UniBanController controller) {
         if (Database.get() == null) return new HashSet<>();
 
         String query = "SELECT * FROM {bans}";
@@ -19,6 +20,11 @@ public class LiteBansSupport {
             try (ResultSet result = st.executeQuery()) {
                 while (result.next()) {
                     String uuidStr = result.getString("uuid");
+                    String reason = result.getString("reason");
+
+                    if (controller.shouldIgnoreReason(reason)) {
+                        continue;
+                    }
 
                     try {
                         UUID uuid = UUID.fromString(uuidStr);

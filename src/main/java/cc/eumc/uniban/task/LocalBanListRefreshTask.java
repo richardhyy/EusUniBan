@@ -7,6 +7,8 @@ import cc.eumc.uniban.util.AdvancedBanSupport;
 import cc.eumc.uniban.util.BungeeBanSupport;
 import cc.eumc.uniban.util.LiteBansSupport;
 import cc.eumc.uniban.util.VanillaListSupport;
+import org.bukkit.BanEntry;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -37,6 +39,12 @@ public class LocalBanListRefreshTask implements Runnable {
 
         if (!isBungee) {
             for (OfflinePlayer offlinePlayer : Bukkit.getServer().getBannedPlayers()) {
+                BanEntry banEntry = Bukkit.getServer().getBanList(BanList.Type.NAME).getBanEntry(offlinePlayer.getName());
+                if (banEntry != null) {
+                    if (controller.shouldIgnoreReason(banEntry.getReason())) {
+                        continue;
+                    }
+                }
                 //if (offlinePlayer.hasPlayedBefore()) {
                 uuidSet.add(offlinePlayer.getUniqueId());
                 //}
@@ -44,20 +52,20 @@ public class LocalBanListRefreshTask implements Runnable {
         }
 
         if (ThirdPartySupportConfig.AdvancedBan) {
-            uuidSet.addAll(AdvancedBanSupport.fetchAllBanned());
+            uuidSet.addAll(AdvancedBanSupport.fetchAllBanned(controller));
         }
         // TODO Support for BungeeAdminTool
         /*if (ThirdPartySupportConfig.BungeeAdminTool) {
-            uuidSet.addAll(BungeeAdminToolSupport.fetchAllBanned());
+            uuidSet.addAll(BungeeAdminToolSupport.fetchAllBanned(controller));
         }*/
         if (ThirdPartySupportConfig.BungeeBan) {
-            uuidSet.addAll(BungeeBanSupport.fetchAllBanned());
+            uuidSet.addAll(BungeeBanSupport.fetchAllBanned(controller));
         }
         if (ThirdPartySupportConfig.LiteBans) {
-            uuidSet.addAll(LiteBansSupport.fetchAllBanned());
+            uuidSet.addAll(LiteBansSupport.fetchAllBanned(controller));
         }
         if (ThirdPartySupportConfig.VanillaList) {
-            uuidSet.addAll(VanillaListSupport.fetchAllBanned());
+            uuidSet.addAll(VanillaListSupport.fetchAllBanned(controller));
         }
 
         controller.updateLocalBanListCache(uuidSet);

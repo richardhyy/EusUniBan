@@ -1,4 +1,4 @@
-ConfigVersion: 5
+ConfigVersion: 6
 Settings:
   # Set to -1 to disable
   WarnThreshold: 1
@@ -16,6 +16,9 @@ Settings:
     Port: 60009
     Threads: 2
     Password: 'UniBan'
+    #Case-insensitive
+    ExcludeIfReasonContain:
+      - 'local'
     AccessControl:
       Enabled: true
       MinPeriodPerServer: 1.0
