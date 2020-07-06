@@ -153,7 +153,7 @@ Message:
   Processing: 'Just a sec...'
   HelpMessageHeader: 'Usage:'
   HelpMessageList:
-    - '/uniban lookup <&lUUID&r>'
+    - '/uniban lookup <&lName&r>'
     - '/uniban check <&lPlayer/UUID&r>'
     - '/uniban whitelist <“&ladd&r”/“&lremove&r”> <&lPlayer/UUID>'
     - '/uniban share <&lYour Server Hostname&r, eg. &nexample.com&r>'
