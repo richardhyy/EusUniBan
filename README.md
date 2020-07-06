@@ -31,6 +31,7 @@ A decentralized ban-list sharing plugin for Minecraft server.
 
 | Command                                                      |
 | ------------------------------------------------------------ |
+| /uniban lookup \<**Name**>                                   |
 | /uniban check <**Player/UUID**>                              |
 | /uniban whitelist <"**add**"/"**remove**"> <**Player/UUID**> |
 | /uniban subscribe \<**Subscription Key**\>                   |
@@ -142,14 +143,17 @@ Message:
   PluginEnabled: '&lEnabled'
   PluginNotFound: '&oNot Found'
   BroadcastStarted: 'UniBan broadcast started on %s:%s (%s Threads)'
+  BroadcastActiveModeEnabled: 'UniBan broadcast service is running under active mode.'
   BroadcastFailed: 'Failed starting broadcast server'
   UpToDate: 'You are up-to-date.'
   NewVersionAvailable: 'There is a newer version %s available at §n https://www.spigotmc.org/resources/74747/'
   InvalidSpigotResourceID: 'It looks like you are using an unsupported version of UniBan. Please manually look for update.'
   FailedCheckingUpdate: 'Error occurred when checking update'
   LoadedFromLocalCache: 'Loaded %s banned players from ban-list cache.'
+  Processing: 'Just a sec...'
   HelpMessageHeader: 'Usage:'
   HelpMessageList:
+    - '/uniban lookup <&lUUID&r>'
     - '/uniban check <&lPlayer/UUID&r>'
     - '/uniban whitelist <“&ladd&r”/“&lremove&r”> <&lPlayer/UUID>'
     - '/uniban share <&lYour Server Hostname&r, eg. &nexample.com&r>'
