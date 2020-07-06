@@ -37,6 +37,7 @@ public class BungeePlayerListener implements Listener {
             plugin.getLogger().info(warningMessage);
 
             plugin.getProxy().getPlayers().forEach(proxiedPlayer -> {
+                // TODO Fix: Warning spam
                 if ((BungeeConfig.BroadcastWarning && proxiedPlayer.getUniqueId() != e.getConnection().getUniqueId())
                 || (proxiedPlayer.hasPermission("uniban.getnotified") || proxiedPlayer.hasPermission("uniban.admin"))) {
                     proxiedPlayer.sendMessage(warningMessage);

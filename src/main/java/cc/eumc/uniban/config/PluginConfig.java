@@ -172,6 +172,7 @@ public abstract class PluginConfig {
         Message.FailedCheckingUpdate = Message.replace(configGetString("Message.FailedCheckingUpdate", "Error occurred when checking update"));
         Message.LoadedFromLocalCache = Message.replace(configGetString("Message.LoadedFromLocalCache", "Loaded %s banned players from ban-list cache."));
         Message.HelpMessageHeader = Message.replace(configGetString("Message.HelpMessageHeader", "Usage:"));
+        Message.Processing = Message.replace(configGetString("Message.Processing", "Just a sec..."));
         Message.HelpMessageList = Message.replace(configGetStringList("Message.HelpMessageList"));
         if (Message.HelpMessageList.size() == 0) {
             Message.HelpMessageList = Arrays.asList("/uniban check <§lPlayer/UUID§r>",

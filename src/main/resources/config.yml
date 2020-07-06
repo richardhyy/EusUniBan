@@ -82,8 +82,10 @@ Message:
   InvalidSpigotResourceID: 'It looks like you are using an unsupported version of UniBan. Please manually look for update.'
   FailedCheckingUpdate: 'Error occurred when checking update'
   LoadedFromLocalCache: 'Loaded %s banned players from ban-list cache.'
+  Processing: 'Just a sec...'
   HelpMessageHeader: 'Usage:'
   HelpMessageList:
+    - '/uniban lookup <&lUUID&r>'
     - '/uniban check <&lPlayer/UUID&r>'
     - '/uniban whitelist <“&ladd&r”/“&lremove&r”> <&lPlayer/UUID>'
     - '/uniban share <&lYour Server Hostname&r, eg. &nexample.com&r>'

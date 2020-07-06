@@ -3,6 +3,7 @@ package cc.eumc.uniban.command;
 import cc.eumc.uniban.UniBanBukkitPlugin;
 import cc.eumc.uniban.controller.BukkitCommandController;
 import cc.eumc.uniban.exception.CommandBreakException;
+import cc.eumc.uniban.serverinterface.BukkitPlayerInfo;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 public class BukkitCommand implements CommandExecutor, TabExecutor {
     UniBanBukkitPlugin plugin;
     BukkitCommandController commandController;
-    private String[] commands = {"help", "check", "subscribe", "share", "whitelist", "exempt", "reload"};
+    private String[] commands = {"help", "check", "lookup", "subscribe", "share", "whitelist", "exempt", "reload"};
     private String[] whitelistSubcommands = {"add", "remove"};
 
     public BukkitCommand(UniBanBukkitPlugin instance) {
@@ -26,13 +27,25 @@ public class BukkitCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        net.md_5.bungee.api.CommandSender bungeeSender = (net.md_5.bungee.api.CommandSender) sender;
         if (sender.hasPermission("uniban.admin")) {
-            try {
-                for (String line : commandController.executeCommand(args)) {
-                    sender.sendMessage(line);
-                }
-            } catch (CommandBreakException e) {
+            /*
+            if (args.length == 2 && args[0].equalsIgnoreCase("lookupuuid")) {
+                sender.sendMessage("");
+                UniBanController.nameToUUID(args[1]);
                 return true;
+            }
+             */
+
+            List<String> msgLines = null;
+            try {
+                msgLines = commandController.executeCommand(args, plugin.getController(), new BukkitPlayerInfo<>(sender));
+            } catch (CommandBreakException ignored) {
+                if (msgLines != null) {
+                    for (String line : msgLines) {
+                        sender.sendMessage(line);
+                    }
+                }
             }
         }
         else {

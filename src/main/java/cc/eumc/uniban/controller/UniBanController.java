@@ -6,6 +6,7 @@ import cc.eumc.uniban.extension.HttpService;
 import cc.eumc.uniban.extension.UniBanExtension;
 import cc.eumc.uniban.handler.BanListRequestHandler;
 import cc.eumc.uniban.handler.IDRequestHandler;
+import cc.eumc.uniban.serverinterface.PlayerInfo;
 import cc.eumc.uniban.util.Encryption;
 import cc.eumc.uniban.util.HttpRequest;
 import com.google.gson.Gson;
@@ -403,8 +404,39 @@ public abstract class UniBanController {
                 return true;
             }
         }
-
         return false;
+    }
+
+    abstract PlayerInfo getPlayerInfoFromUUID(UUID uuid);
+
+    private class NameUid {
+        String name;
+        String id;
+    }
+
+    public static UUID nameToUUID(String name) {
+        try {
+            Gson g = new Gson();
+            String jsonText = HttpRequest.get(new URL("https://api.mojang.com/users/profiles/minecraft/" + name))
+                    .execute()
+                    .expectResponseCode(200)
+                    .returnContent()
+                    .asString("UTF-8").trim();
+            NameUid nameUid = g.fromJson(jsonText, NameUid.class);
+            //System.out.println(jsonText);
+            if (nameUid == null) {
+                return null;
+            }
+            else {
+                //System.out.println(nameUid.id);
+                return UUID.fromString(nameUid.id.replaceFirst(
+                        "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public abstract void sendInfo(String message);

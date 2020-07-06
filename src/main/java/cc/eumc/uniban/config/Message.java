@@ -35,6 +35,7 @@ public class Message {
     public static String InvalidSpigotResourceID;
     public static String FailedCheckingUpdate;
     public static String LoadedFromLocalCache;
+    public static String Processing;
     public static String HelpMessageHeader;
     public static List<String> HelpMessageList;
 

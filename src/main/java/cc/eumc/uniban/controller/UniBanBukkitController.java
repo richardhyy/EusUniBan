@@ -3,12 +3,15 @@ package cc.eumc.uniban.controller;
 import cc.eumc.uniban.UniBanBukkitPlugin;
 import cc.eumc.uniban.config.BukkitConfig;
 import cc.eumc.uniban.config.Message;
+import cc.eumc.uniban.serverinterface.BukkitPlayerInfo;
+import cc.eumc.uniban.serverinterface.PlayerInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class UniBanBukkitController extends UniBanController {
     public UniBanBukkitController() {
@@ -50,6 +53,11 @@ public class UniBanBukkitController extends UniBanController {
     @Override
     public void saveConfig() {
         UniBanBukkitPlugin.getInstance().saveConfig();
+    }
+
+    @Override
+    PlayerInfo getPlayerInfoFromUUID(UUID uuid) {
+        return new BukkitPlayerInfo(UniBanBukkitPlugin.getInstance().getServer().getPlayer(uuid));
     }
 
     @Override

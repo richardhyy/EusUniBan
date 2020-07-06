@@ -4,9 +4,8 @@ import cc.eumc.uniban.config.Message;
 import cc.eumc.uniban.config.PluginConfig;
 import cc.eumc.uniban.config.ServerEntry;
 import cc.eumc.uniban.exception.CommandBreakException;
+import cc.eumc.uniban.serverinterface.PlayerInfo;
 import cc.eumc.uniban.util.Encryption;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -25,7 +24,7 @@ public abstract class CommandController {
         MSGPREFIX = Message.MessagePrefix;
     }
 
-    public List<String> executeCommand(String[] args) throws CommandBreakException {
+    public List<String> executeCommand(String[] args, UniBanController controller, PlayerInfo sender) throws CommandBreakException {
         List<String> result = new ArrayList<>();
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help"))) {
             sendHelp(result);
@@ -40,24 +39,42 @@ public abstract class CommandController {
             }
         }
         else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("check")) {
-                UUID uuid;
-                try {
-                    uuid = UUID.fromString(args[1]);
-                } catch (IllegalArgumentException e) {
-                    Player player = Bukkit.getPlayer(args[1]);
-                    if (player == null) {
-                        result.add(MSGPREFIX + String.format(Message.PlayerNotExist, args[1]));
-                        throw new CommandBreakException();
+            if (args[0].equalsIgnoreCase("lookup")) {
+                sender.sendMessage(MSGPREFIX + Message.Processing);
+
+                controller.runTaskLater(() -> {
+                    UUID uuid = UniBanController.nameToUUID(args[1]);
+                    if (uuid == null) {
+                        sender.sendMessage(MSGPREFIX + String.format(Message.PlayerNotExist, args[1]));
                     }
-                    else
-                        uuid = player.getUniqueId();
-                }
-                Boolean banned = isBannedOnline(uuid);
-                result.add(MSGPREFIX + String.format(Message.PlayerState, args[1], banned?Message.PlayerBanned:Message.PlayerNormal));
-                if (banned) {
-                    result.addAll(getBannedServerList(uuid));
-                }
+                    else {
+                        sender.sendMessage(MSGPREFIX + args[1] + ": " + uuid.toString());
+                    }
+                }, 1);
+
+                throw new CommandBreakException();
+            }
+            else if (args[0].equalsIgnoreCase("check")) {
+
+                controller.runTaskLater(() -> {
+                    UUID uuid = null;
+                    try {
+                        uuid = UUID.fromString(args[1]);
+                    } catch (Exception e) {
+                        sender.sendMessage(MSGPREFIX + Message.Processing);
+                        uuid = UniBanController.nameToUUID(args[1]);
+                    }
+                    if (uuid == null) {
+                        sender.sendMessage(MSGPREFIX + String.format(Message.PlayerNotExist, args[1]));
+                        return;
+                    }
+                    boolean banned = isBannedOnline(uuid);
+                    sender.sendMessage(MSGPREFIX + String.format(Message.PlayerState, args[1], banned?Message.PlayerBanned:Message.PlayerNormal));
+                    if (banned) {
+                        getBannedServerList(uuid).forEach(sender::sendMessage);
+                    }
+                }, 1);
+                throw new CommandBreakException();
             }
             else if (args[0].equalsIgnoreCase("subscribe")) {
                 // T√ODO A quick way to add subscription
@@ -106,13 +123,13 @@ public abstract class CommandController {
                     try {
                         addWhitelist(UUID.fromString(args[2]));
                     } catch (IllegalArgumentException e) {
-                        Player player = Bukkit.getPlayer(args[2]);
+                        PlayerInfo player = controller.getPlayerInfoFromUUID(UniBanController.nameToUUID(args[2]));
                         if (player == null) {
                             result.add(MSGPREFIX + String.format(Message.PlayerNotExist, args[2]));
                             throw new CommandBreakException();
                         }
                         else
-                            addWhitelist(player.getUniqueId());
+                            addWhitelist(player.getUUID());
                     }
                     result.add(MSGPREFIX + String.format(Message.WhitelistAdded, args[2]));
                 }
@@ -120,13 +137,13 @@ public abstract class CommandController {
                     try {
                         removeWhitelist(UUID.fromString(args[2]));
                     } catch (IllegalArgumentException e) {
-                        Player player = Bukkit.getPlayer(args[2]);
+                        PlayerInfo player = controller.getPlayerInfoFromUUID(UniBanController.nameToUUID(args[2]));
                         if (player == null) {
                             result.add(MSGPREFIX + String.format(Message.PlayerNotExist, args[2]));
                             throw new CommandBreakException();
                         }
                         else
-                            removeWhitelist(player.getUniqueId());
+                            removeWhitelist(player.getUUID());
                     }
                     result.add(MSGPREFIX + String.format(Message.WhitelistRemoved, args[2]));
                 }

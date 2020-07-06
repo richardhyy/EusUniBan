@@ -3,12 +3,16 @@ package cc.eumc.uniban.controller;
 import cc.eumc.uniban.UniBanBungeePlugin;
 import cc.eumc.uniban.config.BungeeConfig;
 import cc.eumc.uniban.config.Message;
+import cc.eumc.uniban.serverinterface.BungeePlayerInfo;
+import cc.eumc.uniban.serverinterface.PlayerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class UniBanBungeeController extends UniBanController {
@@ -54,6 +58,11 @@ public class UniBanBungeeController extends UniBanController {
     @Override
     public void saveConfig() {
         UniBanBungeePlugin.getInstance().saveConfig();
+    }
+
+    @Override
+    PlayerInfo getPlayerInfoFromUUID(UUID uuid) {
+        return new BungeePlayerInfo<ProxiedPlayer>(UniBanBungeePlugin.getInstance().getProxy().getPlayer(uuid));
     }
 
     @Override
