@@ -27,7 +27,6 @@ public class BukkitCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        net.md_5.bungee.api.CommandSender bungeeSender = (net.md_5.bungee.api.CommandSender) sender;
         if (sender.hasPermission("uniban.admin")) {
             /*
             if (args.length == 2 && args[0].equalsIgnoreCase("lookupuuid")) {

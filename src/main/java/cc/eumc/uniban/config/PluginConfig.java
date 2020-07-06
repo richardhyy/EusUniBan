@@ -31,6 +31,7 @@ public abstract class PluginConfig {
 
     public static boolean EnabledAccessControl;
     public static int MinPeriodPerServer;
+    // TODO Change to `Blocklist` & `Allowlist`
     public static boolean BlacklistEnabled;
     public static boolean WhitelistEnabled;
     public static List<String> Blacklist;
