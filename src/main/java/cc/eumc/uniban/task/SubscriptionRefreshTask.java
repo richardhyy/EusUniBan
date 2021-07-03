@@ -4,6 +4,7 @@ import cc.eumc.uniban.config.PluginConfig;
 import cc.eumc.uniban.config.ServerEntry;
 import cc.eumc.uniban.controller.UniBanController;
 import cc.eumc.uniban.util.Encryption;
+import cc.eumc.uniban.util.ServerListPing;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.*;
 
@@ -76,15 +78,28 @@ public class SubscriptionRefreshTask implements Runnable {
             try {
                 String result = "";
 
-                switch (port) {
-                    case 80:
-                        result = httpGet("http://" + host + "/get");
-                        break;
-                    case 443:
-                        result = httpsGet("https://" + host + "/get");
-                        break;
-                    default:
-                        result = httpGet("http://" + serverEntry.getAddress() + "/get");
+                try {
+                    // New method
+                    ServerListPing serverListPing = new ServerListPing();
+                    serverListPing.setAddress(new InetSocketAddress(host, port));
+                    serverListPing.setTimeout(PluginConfig.SubscriptionGetReadTimeout);
+                    ServerListPing.StatusResponse responseJson = serverListPing.fetchData("UNIBAN");
+                    if (responseJson.getDescription().getText() == null) {
+                        throw new Exception("Invalid response");
+                    }
+                    result = responseJson.getDescription().getText();
+                } catch (Exception ignored) {
+                    // Legacy
+                    switch (port) {
+                        case 80:
+                            result = httpGet("http://" + host + "/get");
+                            break;
+                        case 443:
+                            result = httpsGet("https://" + host + "/get");
+                            break;
+                        default:
+                            result = httpGet("http://" + serverEntry.getAddress() + "/get");
+                    }
                 }
 
                 result = Encryption.decrypt(result, PluginConfig.Subscriptions.get(serverEntry));
@@ -153,7 +168,7 @@ public class SubscriptionRefreshTask implements Runnable {
                 }
                 coolDownMap.put(serverEntry.getAddress(), coolDown);
 
-                //e.printStackTrace();
+//                e.printStackTrace();
                 controller.sendWarning("Failed pulling ban-list from: " + host+":"+port + ", we have suspended it for " + coolDown.remaining + " attempt" + (coolDown.remaining>1?"s":"") +".");
             }
         }
