@@ -4,6 +4,7 @@ import cc.eumc.uniban.command.BukkitCommand;
 import cc.eumc.uniban.config.*;
 import cc.eumc.uniban.controller.UniBanBukkitController;
 import cc.eumc.uniban.listener.BukkitPlayerListener;
+import cc.eumc.uniban.listener.PaperListener;
 import cc.eumc.uniban.task.LocalBanListRefreshTask;
 import cc.eumc.uniban.task.SubscriptionRefreshTask;
 import cc.eumc.uniban.task.UpdateCheckTask;
@@ -19,10 +20,17 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
     BukkitTask Task_SubscriptionRefreshTask;
     UniBanBukkitController controller;
     BukkitConfig bukkitConfig;
+    boolean isPaper = false;
 
     @Override
     public void onEnable() {
         instance = this;
+
+        // Check if running Paper
+        try {
+            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+            isPaper = true;
+        } catch (ClassNotFoundException ignore) { }
 
         reloadConfig();
 
@@ -32,6 +40,9 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
         registerCommand();
 
         Bukkit.getPluginManager().registerEvents(new BukkitPlayerListener(this), this);
+        if (isPaper) {
+            Bukkit.getPluginManager().registerEvents(new PaperListener(this), this);
+        }
 
         getLogger().info("UniBan Enabled");
     }
@@ -109,5 +120,9 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
 
     public BukkitConfig getBukkitConfig() {
         return bukkitConfig;
+    }
+
+    public boolean isPaper() {
+        return isPaper;
     }
 }
