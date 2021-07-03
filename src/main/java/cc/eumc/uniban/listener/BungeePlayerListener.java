@@ -4,16 +4,24 @@ import cc.eumc.uniban.UniBanBungeePlugin;
 import cc.eumc.uniban.config.BungeeConfig;
 import cc.eumc.uniban.config.Message;
 import cc.eumc.uniban.config.PluginConfig;
+import cc.eumc.uniban.controller.AccessController;
+import cc.eumc.uniban.controller.UniBanController;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
 public class BungeePlayerListener implements Listener {
     final UniBanBungeePlugin plugin;
+    AccessController accessController = new AccessController();
+
     public BungeePlayerListener(UniBanBungeePlugin instance) {
         this.plugin = instance;
     }
@@ -51,5 +59,28 @@ public class BungeePlayerListener implements Listener {
             e.setCancelReason(reason);
         }
 
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onListPing(ProxyPingEvent e) {
+        InetSocketAddress address = e.getConnection().getVirtualHost();
+        if (address == null) {
+            return;
+        }
+        if (!address.getHostName().equals("UNIBAN")) {
+            return;
+        }
+
+        String host = e.getConnection().getAddress().getHostString();
+        if (!accessController.canAccess(host)) {
+            // if host was blocked
+            return;
+        }
+
+        UniBanController controller = plugin.getController();
+        controller.sendInfo("Ban-list request from: " + host);
+        ServerPing response = e.getResponse();
+        response.setDescriptionComponent(new TextComponent(controller.getBanListJson()));
+        e.setResponse(response);
     }
 }
