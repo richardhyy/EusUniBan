@@ -63,6 +63,10 @@ public class BungeePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onListPing(ProxyPingEvent e) {
+        if (!PluginConfig.ViaServerListPing_Enabled) {
+            return;
+        }
+
         InetSocketAddress address = e.getConnection().getVirtualHost();
         if (address == null) {
             return;

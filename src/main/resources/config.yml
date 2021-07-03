@@ -1,4 +1,4 @@
-ConfigVersion: 6
+ConfigVersion: 7
 Settings:
   # Everyone except the target will be warned if enabled
   BroadcastWarning: false
@@ -9,14 +9,17 @@ Settings:
   # TemporarilyPauseUpdateThreshold: 5
   Broadcast:
     Enabled: true
-    # EnableDHT: false
+    ViaServerListPing:
+      Enabled: true
     ActiveMode:
       Enabled: false
       PostUrl: https://example.com/example.php
       PostSecret: unibancopy
-    Host: '0.0.0.0'
-    Port: 60009
-    Threads: 2
+    LegacyWebServer:
+      Enabled: false
+      Host: '0.0.0.0'
+      Port: 60009
+      Threads: 2
     Password: 'UniBan'
     # Case-insensitive
     ExcludeIfReasonContain:
@@ -76,6 +79,7 @@ Message:
   PluginNotFound: '&oNot Found'
   BroadcastStarted: 'UniBan broadcast started on %s:%s (%s Threads)'
   BroadcastActiveModeEnabled: 'UniBan broadcast service is running under active mode.'
+  BroadcastViaServerListPing: 'UniBan is delivering ban-list via server list ping.'
   BroadcastFailed: 'Failed starting broadcast server'
   UpToDate: 'You are up-to-date.'
   NewVersionAvailable: 'There is a newer version %s available at §n https://www.spigotmc.org/resources/74747/'

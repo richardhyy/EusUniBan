@@ -48,13 +48,13 @@ public abstract class UniBanController {
         loadBanListFromDisk();
 
         if (PluginConfig.EnableBroadcast) {
-            if (!PluginConfig.ActiveMode_Enabled) {
+            if (PluginConfig.Legacy_Enabled) {
                 try {
-                    server = HttpServer.create(new InetSocketAddress(PluginConfig.Host, PluginConfig.Port), 0);
+                    server = HttpServer.create(new InetSocketAddress(PluginConfig.Legacy_Host, PluginConfig.Legacy_Port), 0);
                     server.createContext("/get", new BanListRequestHandler(this));
                     // experiential
                     server.createContext("/identify", new IDRequestHandler(this));
-                    server.setExecutor(Executors.newFixedThreadPool(PluginConfig.Threads));
+                    server.setExecutor(Executors.newFixedThreadPool(PluginConfig.Legacy_Threads));
                     server.start();
                     serverStarted = true;
                 } catch (IOException e) {
@@ -63,9 +63,9 @@ public abstract class UniBanController {
                 }
             }
 
-            if (PluginConfig.EnableDHT) {
-                deliveryController = new DeliveryController(this);
-            }
+//            if (PluginConfig.EnableDHT) {
+//                deliveryController = new DeliveryController(this);
+//            }
         }
 
     }

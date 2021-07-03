@@ -28,7 +28,7 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
 
         // Check if running Paper
         try {
-            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+            Class.forName("com.destroystokyo.paper.event.server.PaperServerListPingEvent");
             isPaper = true;
         } catch (ClassNotFoundException ignore) { }
 
@@ -40,8 +40,12 @@ public final class UniBanBukkitPlugin extends JavaPlugin {
         registerCommand();
 
         Bukkit.getPluginManager().registerEvents(new BukkitPlayerListener(this), this);
-        if (isPaper) {
-            Bukkit.getPluginManager().registerEvents(new PaperListener(this), this);
+        if (PluginConfig.EnableBroadcast && PluginConfig.ViaServerListPing_Enabled) {
+            if (isPaper) {
+                Bukkit.getPluginManager().registerEvents(new PaperListener(this), this);
+            } else {
+                getLogger().warning("Failed enabling ban-list delivery via server list ping: Paper server required.");
+            }
         }
 
         getLogger().info("UniBan Enabled");

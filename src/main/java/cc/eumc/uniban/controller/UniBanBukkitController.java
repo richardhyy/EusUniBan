@@ -18,13 +18,16 @@ public class UniBanBukkitController extends UniBanController {
         super();
         //this.plugin = instance;
         if (super.serverStarted) {
-            sendInfo(String.format(Message.BroadcastStarted, BukkitConfig.Host, BukkitConfig.Port, BukkitConfig.Threads));
+            sendInfo(String.format(Message.BroadcastStarted, BukkitConfig.Legacy_Host, BukkitConfig.Legacy_Port, BukkitConfig.Legacy_Threads));
         }
         else if (BukkitConfig.EnableBroadcast) {
             if (BukkitConfig.ActiveMode_Enabled) {
                 sendInfo(Message.BroadcastActiveModeEnabled);
             }
-            else {
+            else if (BukkitConfig.ViaServerListPing_Enabled) {
+                sendInfo(Message.BroadcastViaServerListPing);
+            }
+            else if (BukkitConfig.Legacy_Enabled) {
                 sendSevere(Message.BroadcastFailed);
             }
         }

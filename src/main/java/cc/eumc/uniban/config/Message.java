@@ -27,6 +27,7 @@ public class Message {
     public static String Encrypted;
     public static String BroadcastStarted;
     public static String BroadcastActiveModeEnabled;
+    public static String BroadcastViaServerListPing;
     public static String BroadcastFailed;
     public static String PluginEnabled;
     public static String PluginNotFound;

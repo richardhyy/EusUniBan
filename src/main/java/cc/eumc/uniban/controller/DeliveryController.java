@@ -20,7 +20,7 @@ public class DeliveryController {
 
         // TODO DHT
         // In production the nodeId would preferably be static for one node
-        kad = new Kademlia(Key.build(PluginConfig.NodeID), PluginConfig.Host+":"+PluginConfig.Port);
+        kad = new Kademlia(Key.build(PluginConfig.NodeID), PluginConfig.Legacy_Host +":"+PluginConfig.Legacy_Port);
         // Bootstrap using a remote server (there is no special configuration on the remote server necessary)
         controller.runTaskLater(() -> {
             controller.sendInfo("[DHT] Preparing bootstrap");

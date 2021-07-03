@@ -114,7 +114,7 @@ public class ServerListPing {
         byte[] in = new byte[length];
         dataInputStream.readFully(in);  //read json string
         String json = new String(in);
-        System.out.println(json);
+//        System.out.println(json);
 
         long now = System.currentTimeMillis();
         dataOutputStream.writeByte(0x09); //size of packet

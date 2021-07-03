@@ -22,13 +22,16 @@ public class UniBanBungeeController extends UniBanController {
 
         // Fix: Broadcast status will not be displayed on BungeeCord
         if (super.serverStarted) {
-            sendInfo(String.format(Message.BroadcastStarted, BungeeConfig.Host, BungeeConfig.Port, BungeeConfig.Threads));
+            sendInfo(String.format(Message.BroadcastStarted, BungeeConfig.Legacy_Host, BungeeConfig.Legacy_Port, BungeeConfig.Legacy_Threads));
         }
         else if (BungeeConfig.EnableBroadcast) {
             if (BungeeConfig.ActiveMode_Enabled) {
                 sendInfo(Message.BroadcastActiveModeEnabled);
             }
-            else {
+            else if (BungeeConfig.ViaServerListPing_Enabled) {
+                sendInfo(Message.BroadcastViaServerListPing);
+            }
+            else if (BungeeConfig.Legacy_Enabled) {
                 sendSevere(Message.BroadcastFailed);
             }
         }

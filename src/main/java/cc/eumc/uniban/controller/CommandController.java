@@ -97,7 +97,7 @@ public abstract class CommandController {
                 }
             }
             else if (args[0].equalsIgnoreCase("share")) {
-                String key = Encryption.encrypt(args[1] + ":" + PluginConfig.Port + "@" + PluginConfig.Password, SHARING_KEY);
+                String key = Encryption.encrypt(args[1] + ":" + PluginConfig.Legacy_Port + "@" + PluginConfig.Password, SHARING_KEY);
                 if (key == null) {
                     result.add(MSGPREFIX + String.format(Message.Error, "Failed generating Subscription Key."));
                 }

@@ -9,7 +9,7 @@ public abstract class PluginConfig {
     public static boolean LiteBans;
     public static boolean AdvancedBan;
 
-    public final static int PluginConfigVersion = 6;
+    public final static int PluginConfigVersion = 7;
 
     public static boolean BroadcastWarning;
     public static int ConfigVersion;
@@ -19,9 +19,11 @@ public abstract class PluginConfig {
     public static double SubscriptionRefreshPeriod;
     public static int SubscriptionGetConnectTimeout;
     public static int SubscriptionGetReadTimeout;
-    public static String Host;
-    public static int Port;
-    public static int Threads;
+    public static boolean ViaServerListPing_Enabled;
+    public static boolean Legacy_Enabled;
+    public static String Legacy_Host;
+    public static int Legacy_Port;
+    public static int Legacy_Threads;
     public static String Password;
     public static Key EncryptionKey;
     public static String NodeID;
@@ -64,12 +66,17 @@ public abstract class PluginConfig {
                 ActiveMode_PostUrl = configGetString("Settings.Broadcast.ActiveMode.PostUrl", "");
                 ActiveMode_PostSecret = configGetString("Settings.Broadcast.ActiveMode.PostSecret", "");
             }
-            else {
-                Host = configGetString("Settings.Broadcast.Host", "0.0.0.0");
-                Port = configGetInt("Settings.Broadcast.Port", 60009);
-                Threads = configGetInt("Settings.Broadcast.Threads", 2);
-                Password = configGetString("Settings.Broadcast.Password", "");
-                EncryptionKey = Encryption.getKeyFromString(Password);
+
+            Password = configGetString("Settings.Broadcast.Password", "");
+            EncryptionKey = Encryption.getKeyFromString(Password);
+
+            ViaServerListPing_Enabled = configGetBoolean("Settings.Broadcast.ViaServerListPing.Enabled", false);
+
+            Legacy_Enabled = configGetBoolean("Settings.Broadcast.LegacyWebServer.Enabled", false);
+            if (Legacy_Enabled) {
+                Legacy_Host = configGetString("Settings.Broadcast.LegacyWebServer.Host", "0.0.0.0");
+                Legacy_Port = configGetInt("Settings.Broadcast.LegacyWebServer.Port", 60009);
+                Legacy_Threads = configGetInt("Settings.Broadcast.LegacyWebServer.Threads", 2);
             }
 
             ExcludeIfReasonContain = new ArrayList<>(configGetStringList("Settings.Broadcast.ExcludeIfReasonContain"));
@@ -165,6 +172,7 @@ public abstract class PluginConfig {
         Message.PluginNotFound = Message.replace(configGetString("Message.PluginNotFound", "&oNot Found"));
         Message.Encrypted = Message.replace(configGetString("Message.Encrypted", "Encrypted"));
         Message.BroadcastActiveModeEnabled = Message.replace(configGetString("Message.BroadcastActiveModeEnabled", "UniBan broadcast service is running under active mode."));
+        Message.BroadcastViaServerListPing = Message.replace(configGetString("Message.BroadcastViaServerListPing", "UniBan broadcast is delivering ban-list via server list ping."));
         Message.BroadcastStarted = Message.replace(configGetString("Message.BroadcastStarted", "UniBan broadcast started on %s:%s (%s Threads)"));
         Message.BroadcastFailed = Message.replace(configGetString("Message.BroadcastFailed", "Failed starting broadcast server"));
         Message.UpToDate = Message.replace(configGetString("Message.UpToDate", "You are up-to-date."));
